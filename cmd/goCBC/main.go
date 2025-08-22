@@ -75,18 +75,15 @@ func main() {
 	//	return []string{"caffeine", "nicotine"}, cobra.ShellCompDirectiveDefault
 	//})
 	rootCmd.PreRunE = func(cmd *cobra.Command, args []string) error {
-		if halfLife, exists := chems.Available[chem]; !exists {
-			return fmt.Errorf("invalid chem option '%s'", chem)
-		} else {
+		if halfLife, exists := chems.Available[chem]; exists {
 			chemMHL = halfLife
+		} else {
+			return fmt.Errorf("invalid chem option '%s'", chem)
 		}
-		if verbosity > 3 {
-			verbosity = 3
-		}
+		verbosity = min(verbosity, 3)
 		return nil
 	}
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)
 	}
 }
@@ -119,5 +116,4 @@ func initLogging() {
 
 	// Set as default slog handler - intercepts ALL slog calls
 	slog.SetDefault(slog.New(handler))
-	//slog.SetLogLoggerLevel(slog.LevelDebug)
 }
