@@ -31,8 +31,8 @@ var (
 		"nicotine": HalfLife.Nicotine,
 	}
 	HalfLife = HalfLifeStruct{
-		Caffeine: 5.7,
-		Nicotine: 1.9,
+		Caffeine: 4.7,
+		Nicotine: 1.7,
 	}
 )
 
