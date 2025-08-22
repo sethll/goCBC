@@ -8,6 +8,7 @@ PKG_PATH=github.com/sethll/goCBC/pkg/progmeta
 GIT_COMMIT=$(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
 LDFLAGS=-ldflags "-X $(PKG_PATH).build=$(GIT_COMMIT)"
 EXAMPLE_ARGS=75 '1030:150' '1230:200' '3215:100' '1788:100'
+VERSION?=v0.1.0
 
 # Default target
 .PHONY: all
@@ -42,6 +43,24 @@ run:
 run-example:
 	go run $(LDFLAGS) $(MAIN_PATH) $(EXAMPLE_ARGS)
 
+# Test all packages
+.PHONY: test
+test:
+	@echo "Tests not implemented :("
+	go test ./...
+
+# Test with coverage
+.PHONY: test-coverage
+test-coverage:
+	@echo "Tests not implemented :("
+	go test -cover ./...
+
+# Test specific package (hlcalc)
+.PHONY: test-hlcalc
+test-hlcalc:
+	@echo "Tests not implemented :("
+	go test ./pkg/hlcalc
+
 # Format code
 .PHONY: fmt
 fmt:
@@ -62,14 +81,25 @@ tidy:
 clean:
 	rm -rf $(BUILD_DIR)
 
-# Lint and check (runs fmt, vet)
+# Lint and check (runs fmt, vet, test)
 .PHONY: check
-check: fmt vet
+check: fmt vet test
 
 # Install the binary to GOPATH/bin
 .PHONY: install
 install:
 	go install $(LDFLAGS) $(MAIN_PATH)
+
+# Create a git tag for release
+.PHONY: tag
+tag:
+	@echo "Creating git tag $(VERSION)"
+	@if git tag -l | grep -q "^$(VERSION)$$"; then \
+		echo "Tag $(VERSION) already exists"; \
+		exit 1; \
+	fi
+	git tag -a $(VERSION) -m "Release $(VERSION)"
+	@echo "Tag $(VERSION) created. Push with: git push origin $(VERSION)"
 
 # Show help
 .PHONY: help
@@ -79,10 +109,14 @@ help:
 	@echo "  build-dev    - Build binary without git commit hash"
 	@echo "  run          - Run the application"
 	@echo "  run-example  - Run with example arguments"
+	@echo "  test         - Run all tests"
+	@echo "  test-coverage- Run tests with coverage"
+	@echo "  test-hlcalc  - Test hlcalc package"
 	@echo "  fmt          - Format code"
 	@echo "  vet          - Vet code"
 	@echo "  tidy         - Tidy dependencies"
 	@echo "  clean        - Clean build artifacts"
-	@echo "  check        - Run fmt, vet"
+	@echo "  check        - Run fmt, vet, test"
 	@echo "  install      - Install binary to GOPATH/bin"
+	@echo "  tag          - Create git tag (use VERSION=v1.0.0)"
 	@echo "  help         - Show this help"

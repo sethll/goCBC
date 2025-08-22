@@ -21,6 +21,8 @@ package progmeta
 import (
 	"fmt"
 	"runtime"
+	"runtime/debug"
+	"strings"
 )
 
 // Version represents the current version of goCBC.
@@ -51,8 +53,96 @@ multiple daily intakes with precise exponential decay calculations.`
 	UsageExample = "goCBC 75 '1100:300' '1500:5'"
 )
 
-// Get returns the current Version information
+// getVersionFromBuildInfo attempts to get version information from Go's build info
+func getVersionFromBuildInfo() (string, string, bool) {
+	info, ok := debug.ReadBuildInfo()
+	if !ok {
+		return "", "", false
+	}
+
+	version := info.Main.Version
+	var revision string
+
+	// Look for VCS revision in build settings
+	for _, setting := range info.Settings {
+		if setting.Key == "vcs.revision" {
+			if len(setting.Value) >= 7 {
+				revision = setting.Value[:7] // Short SHA
+			} else {
+				revision = setting.Value
+			}
+			break
+		}
+	}
+
+	// If we have a proper version tag (not "(devel)" or "v0.0.0-..."), use it
+	if version != "(devel)" && !strings.HasPrefix(version, "v0.0.0-") {
+		return version, revision, true
+	}
+
+	return "", revision, false
+}
+
+// parseVersion parses a semantic version string like "v1.2.3" into components
+func parseVersion(version string) (major, minor, patch string) {
+	// Remove 'v' prefix if present
+	version = strings.TrimPrefix(version, "v")
+
+	parts := strings.Split(version, ".")
+	if len(parts) >= 1 {
+		major = parts[0]
+	}
+	if len(parts) >= 2 {
+		minor = parts[1]
+	}
+	if len(parts) >= 3 {
+		// Handle pre-release suffixes like "3-beta.1"
+		patchParts := strings.Split(parts[2], "-")
+		patch = patchParts[0]
+	}
+
+	// Default to "0" if any component is empty
+	if major == "" {
+		major = "0"
+	}
+	if minor == "" {
+		minor = "0"
+	}
+	if patch == "" {
+		patch = "0"
+	}
+
+	return major, minor, patch
+}
+
+// Get returns the current Version information with fallback logic
 func Get() Version {
+	// Try to get version from Go's build info first (works with go install)
+	if version, revision, ok := getVersionFromBuildInfo(); ok {
+		major, minor, patch := parseVersion(version)
+		buildInfo := revision
+		if buildInfo == "" {
+			buildInfo = "release"
+		}
+		return Version{
+			Major: major,
+			Minor: minor,
+			Patch: patch,
+			Build: buildInfo,
+		}
+	}
+
+	// Fall back to build-time injected version (works with make build)
+	if build != "dev" && build != "" {
+		return Version{
+			Major: ProgVersion.Major,
+			Minor: ProgVersion.Minor,
+			Patch: ProgVersion.Patch,
+			Build: build,
+		}
+	}
+
+	// Default fallback
 	return ProgVersion
 }
 

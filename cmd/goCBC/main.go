@@ -34,10 +34,11 @@ import (
 )
 
 var (
-	verbosity int
-	chem      string
-	chemMHL   float64
-	listChems bool
+	verbosity   int
+	chem        string
+	chemMHL     float64
+	listChems   bool
+	showVersion bool
 )
 
 func main() {
@@ -49,8 +50,8 @@ func main() {
 		Long:    progmeta.LongDesc,
 		Example: progmeta.UsageExample,
 		Args: func(cmd *cobra.Command, args []string) error {
-			// Skip argument validation if --list-chems flag is used
-			if listChems {
+			// Skip argument validation if --list-chems or --version flag is used
+			if listChems || showVersion {
 				return nil
 			}
 			// Must have at least 2 arguments (1 required + at least 1 remaining)
@@ -60,6 +61,10 @@ func main() {
 			return nil
 		},
 		Run: func(cmd *cobra.Command, args []string) {
+			if showVersion {
+				fmt.Println(progmeta.Get().String())
+				return
+			}
 			if listChems {
 				chems.ListAvailableChems()
 				return
@@ -71,6 +76,7 @@ func main() {
 	rootCmd.Flags().CountVarP(&verbosity, "verbose", "v", "increase verbosity (use -v, -vv, -vvv)")
 	rootCmd.Flags().StringVarP(&chem, "chem", "c", "caffeine", "choose chem")
 	rootCmd.Flags().BoolVar(&listChems, "list-chems", false, "list all available chem options")
+	rootCmd.Flags().BoolVar(&showVersion, "version", false, "show version information")
 	//rootCmd.RegisterFlagCompletionFunc("chem", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 	//	return []string{"caffeine", "nicotine"}, cobra.ShellCompDirectiveDefault
 	//})

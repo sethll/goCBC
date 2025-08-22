@@ -17,6 +17,7 @@ Calculates when substance levels (caffeine, nicotine) drop to target amounts for
 - **Check all**: `make check` (runs fmt, vet, test)
 - **Clean**: `make clean`
 - **Install**: `make install` (installs to GOPATH/bin)
+- **Create tag**: `make tag VERSION=v1.0.0` (creates git tag for releases)
 - **Help**: `make help`
 
 ## Usage
