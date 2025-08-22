@@ -39,8 +39,8 @@ var (
 	CopyrightYear = "2025"
 	ProgVersion   = Version{
 		Major: "0",
-		Minor: "0",
-		Patch: "5",
+		Minor: "1",
+		Patch: "0",
 		Build: build,
 	}
 	ShortDesc = "A Go CLI tool for calculating substance metabolism and optimal sleep timing"
