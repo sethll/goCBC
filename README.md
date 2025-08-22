@@ -19,7 +19,7 @@ Requires Go 1.23.0 or later.
 #### Easiest Method
 
 ```bash
-go install https://github.com/sethll/goCBC/cmd/goCBC@latest
+go install github.com/sethll/goCBC/cmd/goCBC@latest
 ```
 
 #### Other Easy Method
