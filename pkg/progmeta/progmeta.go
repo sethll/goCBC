@@ -132,6 +132,24 @@ func Get() Version {
 		}
 	}
 
+	// Check if we have VCS info even without a proper version tag
+	if info, ok := debug.ReadBuildInfo(); ok {
+		for _, setting := range info.Settings {
+			if setting.Key == "vcs.revision" {
+				revision := setting.Value
+				if len(revision) >= 7 {
+					revision = revision[:7] // Short SHA
+				}
+				return Version{
+					Major: ProgVersion.Major,
+					Minor: ProgVersion.Minor,
+					Patch: ProgVersion.Patch,
+					Build: revision,
+				}
+			}
+		}
+	}
+
 	// Fall back to build-time injected version (works with make build)
 	if build != "dev" && build != "" {
 		return Version{
