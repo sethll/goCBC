@@ -44,9 +44,9 @@ var (
 		Build: build,
 	}
 	ShortDesc = "A Go CLI tool for calculating substance metabolism and optimal sleep timing"
-	LongDesc  = `goCBC calculates when substances like caffeine and nicotine drop to target levels 
-for restful sleep using pharmacokinetic half-life modeling. Supports multiple 
-daily intakes with precise exponential decay calculations.`
+	LongDesc  = `goCBC calculates when substances like caffeine and nicotine drop to target
+levels for restful sleep using pharmacokinetic half-life modeling. Supports
+multiple daily intakes with precise exponential decay calculations.`
 	Usage        = "goCBC [flags] <target> <time_amount...>"
 	UsageExample = "goCBC 75 '1100:300' '1500:5'"
 )
