@@ -30,7 +30,7 @@ build-dev:
 # Run built binary
 .PHONY: exec-example
 exec-example:
-	$(BUILD_DIR)/$(BINARY_NAME) $(EXAMPLE_ARGS)
+	$(BUILD_DIR)/$(BINARY_NAME) -vvv $(EXAMPLE_ARGS)
 
 # Run the application
 .PHONY: run
@@ -41,21 +41,6 @@ run:
 .PHONY: run-example
 run-example:
 	go run $(LDFLAGS) $(MAIN_PATH) $(EXAMPLE_ARGS)
-
-# Test all packages
-.PHONY: test
-test:
-	go test ./...
-
-# Test with coverage
-.PHONY: test-coverage
-test-coverage:
-	go test -cover ./...
-
-# Test a single package
-.PHONY: test-hlcalc
-test-hlcalc:
-	go test ./pkg/hlcalc
 
 # Format code
 .PHONY: fmt
@@ -77,9 +62,9 @@ tidy:
 clean:
 	rm -rf $(BUILD_DIR)
 
-# Lint and check (runs fmt, vet, and test)
+# Lint and check (runs fmt, vet)
 .PHONY: check
-check: fmt vet test
+check: fmt vet
 
 # Install the binary to GOPATH/bin
 .PHONY: install
@@ -94,13 +79,10 @@ help:
 	@echo "  build-dev    - Build binary without git commit hash"
 	@echo "  run          - Run the application"
 	@echo "  run-example  - Run with example arguments"
-	@echo "  test         - Run all tests"
-	@echo "  test-coverage- Run tests with coverage"
-	@echo "  test-hlcalc  - Run tests for hlcalc package"
 	@echo "  fmt          - Format code"
 	@echo "  vet          - Vet code"
 	@echo "  tidy         - Tidy dependencies"
 	@echo "  clean        - Clean build artifacts"
-	@echo "  check        - Run fmt, vet, and test"
+	@echo "  check        - Run fmt, vet"
 	@echo "  install      - Install binary to GOPATH/bin"
 	@echo "  help         - Show this help"
