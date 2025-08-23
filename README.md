@@ -45,7 +45,7 @@ This installs the binary to `$GOPATH/bin/goCBC`.
 ## Usage
 
 ```
-goCBC [options] <target> '<time:amount>' ['<time:amount>' ...]
+goCBC [flags] <target> '<time:amount>' ['<time:amount>' ...]
 ```
 
 ### Arguments
@@ -53,7 +53,7 @@ goCBC [options] <target> '<time:amount>' ['<time:amount>' ...]
 - **`target`**: Target substance level in milligrams at bedtime (50-100mg recommended for caffeine)
 - **`'time:amount'`**: Substance intake in 24-hour format `'HHMM:amount'` (e.g., `'1100:300'` for 300mg at 11:00 AM)
 
-### Options
+### Flags
 
 - `-c, --chem <substance>`: Choose substance (default: "caffeine")
 - `-h, --help`: Show help information
