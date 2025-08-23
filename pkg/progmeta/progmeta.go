@@ -42,7 +42,7 @@ var (
 	ProgVersion   = Version{
 		Major: "0",
 		Minor: "1",
-		Patch: "1",
+		Patch: "2",
 		Build: build,
 	}
 	ShortDesc = "A Go CLI tool for calculating substance metabolism and optimal sleep timing"

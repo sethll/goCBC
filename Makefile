@@ -8,7 +8,7 @@ PKG_PATH=github.com/sethll/goCBC/pkg/progmeta
 GIT_COMMIT=$(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
 LDFLAGS=-ldflags "-X $(PKG_PATH).build=$(GIT_COMMIT)"
 EXAMPLE_ARGS=75 '1030:150' '1230:200' '3215:100' '1788:100'
-VERSION?=v0.1.0
+VERSION?=v0.1.2
 
 # Default target
 .PHONY: all
