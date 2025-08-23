@@ -50,7 +50,7 @@ var (
 	ProgVersion = Version{
 		Major:    "0",
 		Minor:    "1",
-		Patch:    "6",
+		Patch:    "7",
 		Build:    build,
 		Runtime:  runtime.Version(),
 		Platform: getPlatform(),
@@ -137,15 +137,13 @@ func getPlatform() string {
 	return fmt.Sprintf("%s/%s", os, arch)
 }
 
-// PlainPrintVersionInfo prints unpretty version information
-func PlainPrintVersionInfo() {
-	outputString := fmt.Sprintf(
-		"%s version %s-%s %s %s",
-		ProgName,
+// GetVersionInfo prints unpretty version information
+func GetVersionInfo() string {
+	return fmt.Sprintf(
+		"%s-%s %s %s",
 		ProgVersion.String(),
 		ProgVersion.Build,
 		ProgVersion.Runtime,
 		ProgVersion.Platform,
 	)
-	fmt.Println(outputString)
 }

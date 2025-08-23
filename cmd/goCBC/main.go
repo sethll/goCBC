@@ -43,6 +43,7 @@ var (
 
 func main() {
 	rootCmd := &cobra.Command{
+		Version: progmeta.GetVersionInfo(),
 		Use:     progmeta.Usage,
 		Short:   progmeta.ShortDesc,
 		Long:    progmeta.LongDesc,
@@ -58,12 +59,19 @@ func main() {
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
-			if showVersion {
-				progmeta.PlainPrintVersionInfo()
-				return
-			}
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			initLogging()
 			progutils.PrintProgHeader()
+			
+			if halfLife, exists := chems.Available[chem]; exists {
+				chemMHL = halfLife
+			} else {
+				return fmt.Errorf("invalid chem option '%s'", chem)
+			}
+			verbosity = min(verbosity, 3)
+			return nil
+		},
+		Run: func(cmd *cobra.Command, args []string) {
 			if listChems {
 				chems.ListAvailableChems()
 				return
@@ -75,20 +83,9 @@ func main() {
 	rootCmd.Flags().CountVarP(&verbosity, "verbose", "v", "increase verbosity (use -v, -vv, -vvv)")
 	rootCmd.Flags().StringVarP(&chem, "chem", "c", "caffeine", "choose chem")
 	rootCmd.Flags().BoolVar(&listChems, "list-chems", false, "list all available chem options")
-	rootCmd.Flags().BoolVar(&showVersion, "version", false, "show version information")
 	//rootCmd.RegisterFlagCompletionFunc("chem", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 	//	return []string{"caffeine", "nicotine"}, cobra.ShellCompDirectiveDefault
 	//})
-	rootCmd.PreRunE = func(cmd *cobra.Command, args []string) error {
-		initLogging()
-		if halfLife, exists := chems.Available[chem]; exists {
-			chemMHL = halfLife
-		} else {
-			return fmt.Errorf("invalid chem option '%s'", chem)
-		}
-		verbosity = min(verbosity, 3)
-		return nil
-	}
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)
 	}

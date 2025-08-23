@@ -80,7 +80,13 @@ func genChemOutputTable() *table.Table {
 				//	return progutils.Styles.TableOddRow
 			}
 		}).
-		BorderHeader(true)
+		BorderHeader(false).
+		BorderColumn(false).
+		BorderRow(false).
+		BorderLeft(false).
+		BorderRight(false).
+		BorderTop(false).
+		BorderBottom(false)
 
 	return chemTable
 }

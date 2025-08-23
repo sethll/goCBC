@@ -11,12 +11,10 @@ Supported substances:
 ```
 # goCBC --list-chems
 ...
-╭──────────────────────┬──────────────╮
-│  Chem                │  Half-life   │
-├──────────────────────┼──────────────┤
-│  caffeine (default)  │  5.00 hours  │
-│  nicotine            │  4.25 hours  │
-╰──────────────────────┴──────────────╯
+Available chem options:
+  Chem                  Half-life
+  caffeine (default)    5.00 hours
+  nicotine              4.25 hours
 ```
 
 ## Installation
