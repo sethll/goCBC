@@ -20,17 +20,21 @@ package progmeta
 
 import (
 	"fmt"
+	"log/slog"
 	"runtime"
 	"runtime/debug"
+	"strconv"
 	"strings"
 )
 
 // Version represents the current version of goCBC.
 type Version struct {
-	Major string
-	Minor string
-	Patch string
-	Build string
+	Major    string
+	Minor    string
+	Patch    string
+	Build    string
+	Runtime  string
+	Platform string
 }
 
 // These variables can be set at build time via -ldflags
@@ -44,10 +48,12 @@ var (
 	CopyrightYear = "2025"
 	// ProgVersion contains the current version information for the program.
 	ProgVersion = Version{
-		Major: "0",
-		Minor: "1",
-		Patch: "4",
-		Build: build,
+		Major:    "0",
+		Minor:    "1",
+		Patch:    "5",
+		Build:    build,
+		Runtime:  runtime.Version(),
+		Platform: getPlatform(),
 	}
 	// ShortDesc is a brief description of the program.
 	ShortDesc = "A Go CLI tool for calculating substance metabolism and optimal sleep timing"
@@ -60,6 +66,16 @@ multiple daily intakes with precise exponential decay calculations.`
 	// UsageExample provides an example of how to use the program.
 	UsageExample = "goCBC 50 '1100:300' '1500:150'"
 )
+
+func init() {
+	// Version validation
+	for _, eachVersionSegment := range []string{ProgVersion.Major, ProgVersion.Minor, ProgVersion.Patch} {
+		if _, err := strconv.Atoi(eachVersionSegment); err != nil {
+			slog.Error("Invalid ProgVersion value set", "value", eachVersionSegment)
+			panic("Unacceptable progmeta.ProgVersion configuration")
+		}
+	}
+}
 
 // readFromBuildInfo attempts to get version information from Go's build info
 func readFromBuildInfo() (string, string, bool) {
@@ -103,15 +119,33 @@ func setBuild() string {
 
 // String returns a formatted string representation of the version information.
 func (v Version) String() string {
-	return fmt.Sprintf("Version: %s.%s.%s Build: %s", v.Major, v.Minor, v.Patch, v.Build)
+	return fmt.Sprintf("%s.%s.%s", v.Major, v.Minor, v.Patch)
 }
 
-// RuntimeVersion returns the Go runtime version information.
-func RuntimeVersion() string {
-	return fmt.Sprintf("Runtime: %s", runtime.Version())
+func (v Version) Tag() string {
+	return fmt.Sprintf("v%s", ProgVersion.String())
 }
 
 // AllVersionBuildRuntimeInfo returns a combined string with version and runtime information.
 func AllVersionBuildRuntimeInfo() string {
-	return fmt.Sprintf("%s %s", ProgVersion.String(), RuntimeVersion())
+	return fmt.Sprintf("Version: %s Build: %s Runtime: %s", ProgVersion.String(), ProgVersion.Build, ProgVersion.Runtime)
+}
+
+func getPlatform() string {
+	arch := runtime.GOARCH
+	os := runtime.GOOS
+	return fmt.Sprintf("%s/%s", os, arch)
+}
+
+// PlainPrintVersionInfo prints unpretty version information
+func PlainPrintVersionInfo() {
+	outputString := fmt.Sprintf(
+		"%s version %s %s %s %s",
+		ProgName,
+		ProgVersion.String(),
+		ProgVersion.Build,
+		ProgVersion.Runtime,
+		ProgVersion.Platform,
+	)
+	fmt.Println(outputString)
 }

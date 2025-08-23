@@ -41,9 +41,11 @@ var (
 	showVersion bool
 )
 
-func main() {
-	progutils.PrintProgHeader()
+func init() {
+	initLogging()
+}
 
+func main() {
 	rootCmd := &cobra.Command{
 		Use:     progmeta.Usage,
 		Short:   progmeta.ShortDesc,
@@ -62,7 +64,7 @@ func main() {
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			if showVersion {
-				fmt.Println(progmeta.ProgVersion.String())
+				progmeta.PlainPrintVersionInfo()
 				return
 			}
 			if listChems {
@@ -95,7 +97,8 @@ func main() {
 }
 
 func runApp(args []string) {
-	initLogging()
+	progutils.PrintProgHeader()
+
 	firstArg := args[0]
 	remainingArgs := args[1:]
 
