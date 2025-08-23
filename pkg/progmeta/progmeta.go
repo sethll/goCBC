@@ -35,21 +35,29 @@ type Version struct {
 
 // These variables can be set at build time via -ldflags
 var (
-	build         = setBuild()
-	ProgName      = "goCBC"
-	Author        = "Seth L"
+	build = setBuild()
+	// ProgName is the name of the program.
+	ProgName = "goCBC"
+	// Author is the program author's name.
+	Author = "Seth L"
+	// CopyrightYear is the copyright year for the program.
 	CopyrightYear = "2025"
-	ProgVersion   = Version{
+	// ProgVersion contains the current version information for the program.
+	ProgVersion = Version{
 		Major: "0",
 		Minor: "1",
-		Patch: "2",
+		Patch: "3",
 		Build: build,
 	}
+	// ShortDesc is a brief description of the program.
 	ShortDesc = "A Go CLI tool for calculating substance metabolism and optimal sleep timing"
-	LongDesc  = `goCBC calculates when substances like caffeine and nicotine drop to target
+	// LongDesc is a detailed description of the program's functionality.
+	LongDesc = `goCBC calculates when substances like caffeine and nicotine drop to target
 levels for restful sleep using pharmacokinetic half-life modeling. Supports
 multiple daily intakes with precise exponential decay calculations.`
-	Usage        = "goCBC [flags] <target> '<time:amount>' ['<time:amount>' ...]"
+	// Usage shows the command-line usage pattern.
+	Usage = "goCBC [flags] <target> '<time:amount>' ['<time:amount>' ...]"
+	// UsageExample provides an example of how to use the program.
 	UsageExample = "goCBC 50 '1100:300' '1500:150'"
 )
 
@@ -93,14 +101,17 @@ func setBuild() string {
 	return revision
 }
 
+// String returns a formatted string representation of the version information.
 func (v Version) String() string {
 	return fmt.Sprintf("Version: %s.%s.%s Build: %s", v.Major, v.Minor, v.Patch, v.Build)
 }
 
+// RuntimeVersion returns the Go runtime version information.
 func RuntimeVersion() string {
 	return fmt.Sprintf("Runtime: %s", runtime.Version())
 }
 
+// AllVersionBuildRuntimeInfo returns a combined string with version and runtime information.
 func AllVersionBuildRuntimeInfo() string {
 	return fmt.Sprintf("%s %s", ProgVersion.String(), RuntimeVersion())
 }

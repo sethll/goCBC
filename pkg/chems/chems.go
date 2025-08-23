@@ -20,22 +20,26 @@ package chems
 
 import "fmt"
 
+// HalfLifeStruct represents the half-life values for different substances in hours.
 type HalfLifeStruct struct {
 	Caffeine float64
 	Nicotine float64
 }
 
 var (
+	// Available contains the mapping of substance names to their half-lives in hours.
 	Available = map[string]float64{
 		"caffeine": HalfLife.Caffeine,
 		"nicotine": HalfLife.Nicotine,
 	}
+	// HalfLife contains the half-life values for all supported substances.
 	HalfLife = HalfLifeStruct{
 		Caffeine: 4.7,
 		Nicotine: 1.7,
 	}
 )
 
+// ListAvailableChems prints a formatted list of all available substances and their half-lives.
 func ListAvailableChems() {
 	fmt.Println("Available chem options:")
 	for chemName, halfLife := range Available {

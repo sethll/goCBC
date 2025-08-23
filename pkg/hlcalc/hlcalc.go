@@ -33,6 +33,10 @@ import (
 // X = Xo * (1/2)^(T/M)
 //
 
+// CalcSubstanceInBody calculates the remaining amount of substance in the body
+// using exponential decay based on half-life. Uses the formula:
+// X = Xo * (1/2)^(T/M)
+// where X is remaining amount, Xo is initial amount, T is time elapsed, M is metabolic half-life.
 func CalcSubstanceInBody(initialAmount, timeInHours, metabolicHalfLife float64) (mgSubstanceInBody float64) {
 	slog.Debug("CalcSubstanceInBody called",
 		"initialAmount", initialAmount,
@@ -60,6 +64,10 @@ func CalcSubstanceInBody(initialAmount, timeInHours, metabolicHalfLife float64) 
 // T = M * (ln(Ca/Xo)/ln(1/2))
 //
 
+// CalcTimeToGivenAmt calculates the time in hours required for a substance to decay
+// from an initial amount to a target amount using half-life. Uses the formula:
+// T = M * (ln(Ca/Xo)/ln(1/2))
+// where T is time, M is metabolic half-life, Ca is target amount, Xo is initial amount.
 func CalcTimeToGivenAmt(givenAmt, initialAmt, metabolicHalfLife *float64) (timeToGivenAmt float64) {
 	slog.Debug("CalcTimeToGivenAmt called",
 		"givenAmt", givenAmt,
