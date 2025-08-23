@@ -25,6 +25,8 @@ import (
 	"time"
 )
 
+// GetBeginningOfToday returns a time.Time representing the start of the day (00:00:00)
+// for the given current time.
 func GetBeginningOfToday(currentTime *time.Time) time.Time {
 	slog.Debug("Getting beginning of today", "currentTime", (*currentTime).Format("2006-01-02 15:04:05"))
 	beginningOfDay := time.Date(
@@ -40,6 +42,7 @@ func GetBeginningOfToday(currentTime *time.Time) time.Time {
 	return beginningOfDay
 }
 
+// GetCurrentTime returns the current local time.
 func GetCurrentTime() time.Time {
 	currentTime := time.Now()
 	slog.Debug("Retrieved current time", "currentTime", currentTime.Format("2006-01-02 15:04:05"))

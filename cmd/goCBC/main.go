@@ -62,7 +62,7 @@ func main() {
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			if showVersion {
-				fmt.Println(progmeta.Get().String())
+				fmt.Println(progmeta.ProgVersion.String())
 				return
 			}
 			if listChems {

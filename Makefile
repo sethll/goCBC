@@ -8,7 +8,7 @@ PKG_PATH=github.com/sethll/goCBC/pkg/progmeta
 GIT_COMMIT=$(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
 LDFLAGS=-ldflags "-X $(PKG_PATH).build=$(GIT_COMMIT)"
 EXAMPLE_ARGS=75 '1030:150' '1230:200' '3215:100' '1788:100'
-VERSION?=v0.1.0
+VERSION?=v0.1.3
 
 # Default target
 .PHONY: all
@@ -20,13 +20,6 @@ build:
 	@echo "Building $(BINARY_NAME) with git commit: $(GIT_COMMIT)"
 	test -d $(BUILD_DIR) || mkdir -p $(BUILD_DIR)
 	go build $(LDFLAGS) -o $(BUILD_DIR)/$(BINARY_NAME) $(MAIN_PATH)
-
-# Build without git commit hash (development)
-.PHONY: build-dev
-build-dev:
-	@echo "Building $(BINARY_NAME) (development build)"
-	test -d $(BUILD_DIR) || mkdir -p $(BUILD_DIR)
-	go build -o $(BUILD_DIR)/$(BINARY_NAME)-dev $(MAIN_PATH)
 
 # Run built binary
 .PHONY: exec-example
@@ -106,12 +99,11 @@ tag:
 help:
 	@echo "Available targets:"
 	@echo "  build        - Build binary with git commit hash"
-	@echo "  build-dev    - Build binary without git commit hash"
 	@echo "  run          - Run the application"
 	@echo "  run-example  - Run with example arguments"
-	@echo "  test         - Run all tests"
-	@echo "  test-coverage- Run tests with coverage"
-	@echo "  test-hlcalc  - Test hlcalc package"
+	@echo "  test         - Run all tests (not implemented)"
+	@echo "  test-coverage- Run tests with coverage (not implemented)"
+	@echo "  test-hlcalc  - Test hlcalc package (not implemented)"
 	@echo "  fmt          - Format code"
 	@echo "  vet          - Vet code"
 	@echo "  tidy         - Tidy dependencies"

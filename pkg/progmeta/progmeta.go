@@ -35,33 +35,42 @@ type Version struct {
 
 // These variables can be set at build time via -ldflags
 var (
-	build         = "dev"
-	ProgName      = "goCBC"
-	Author        = "Seth L"
+	build = setBuild()
+	// ProgName is the name of the program.
+	ProgName = "goCBC"
+	// Author is the program author's name.
+	Author = "Seth L"
+	// CopyrightYear is the copyright year for the program.
 	CopyrightYear = "2025"
-	ProgVersion   = Version{
+	// ProgVersion contains the current version information for the program.
+	ProgVersion = Version{
 		Major: "0",
 		Minor: "1",
-		Patch: "0",
+		Patch: "3",
 		Build: build,
 	}
+	// ShortDesc is a brief description of the program.
 	ShortDesc = "A Go CLI tool for calculating substance metabolism and optimal sleep timing"
-	LongDesc  = `goCBC calculates when substances like caffeine and nicotine drop to target
+	// LongDesc is a detailed description of the program's functionality.
+	LongDesc = `goCBC calculates when substances like caffeine and nicotine drop to target
 levels for restful sleep using pharmacokinetic half-life modeling. Supports
 multiple daily intakes with precise exponential decay calculations.`
-	Usage        = "goCBC [flags] <target> <time_amount...>"
-	UsageExample = "goCBC 75 '1100:300' '1500:5'"
+	// Usage shows the command-line usage pattern.
+	Usage = "goCBC [flags] <target> '<time:amount>' ['<time:amount>' ...]"
+	// UsageExample provides an example of how to use the program.
+	UsageExample = "goCBC 50 '1100:300' '1500:150'"
 )
 
-// getVersionFromBuildInfo attempts to get version information from Go's build info
-func getVersionFromBuildInfo() (string, string, bool) {
+// readFromBuildInfo attempts to get version information from Go's build info
+func readFromBuildInfo() (string, string, bool) {
 	info, ok := debug.ReadBuildInfo()
 	if !ok {
 		return "", "", false
 	}
 
 	version := info.Main.Version
-	var revision string
+
+	revision := ""
 
 	// Look for VCS revision in build settings
 	for _, setting := range info.Settings {
@@ -71,111 +80,38 @@ func getVersionFromBuildInfo() (string, string, bool) {
 			} else {
 				revision = setting.Value
 			}
-			break
+			return version, revision, true
 		}
 	}
 
-	// If we have a proper version tag (not "(devel)" or "v0.0.0-..."), use it
-	if version != "(devel)" && !strings.HasPrefix(version, "v0.0.0-") {
-		return version, revision, true
-	}
-
-	return "", revision, false
+	return version, revision, false
 }
 
-// parseVersion parses a semantic version string like "v1.2.3" into components
-func parseVersion(version string) (major, minor, patch string) {
-	// Remove 'v' prefix if present
-	version = strings.TrimPrefix(version, "v")
-
-	parts := strings.Split(version, ".")
-	if len(parts) >= 1 {
-		major = parts[0]
-	}
-	if len(parts) >= 2 {
-		minor = parts[1]
-	}
-	if len(parts) >= 3 {
-		// Handle pre-release suffixes like "3-beta.1"
-		patchParts := strings.Split(parts[2], "-")
-		patch = patchParts[0]
-	}
-
-	// Default to "0" if any component is empty
-	if major == "" {
-		major = "0"
-	}
-	if minor == "" {
-		minor = "0"
-	}
-	if patch == "" {
-		patch = "0"
-	}
-
-	return major, minor, patch
-}
-
-// Get returns the current Version information with fallback logic
-func Get() Version {
+// setBuild returns the current Version information with fallback logic
+func setBuild() string {
 	// Try to get version from Go's build info first (works with go install)
-	if version, revision, ok := getVersionFromBuildInfo(); ok {
-		major, minor, patch := parseVersion(version)
-		buildInfo := revision
-		if buildInfo == "" {
-			buildInfo = "release"
-		}
-		return Version{
-			Major: major,
-			Minor: minor,
-			Patch: patch,
-			Build: buildInfo,
+	version, revision, ok := readFromBuildInfo()
+	if !ok {
+		if strings.HasPrefix(version, "v0.0.0-") {
+			revision = "dev"
+		} else {
+			revision = "release"
 		}
 	}
-
-	// Check if we have VCS info even without a proper version tag
-	if info, ok := debug.ReadBuildInfo(); ok {
-		for _, setting := range info.Settings {
-			if setting.Key == "vcs.revision" {
-				revision := setting.Value
-				if len(revision) >= 7 {
-					revision = revision[:7] // Short SHA
-				}
-				return Version{
-					Major: ProgVersion.Major,
-					Minor: ProgVersion.Minor,
-					Patch: ProgVersion.Patch,
-					Build: revision,
-				}
-			}
-		}
-	}
-
-	// Fall back to build-time injected version (works with make build)
-	if build != "dev" && build != "" {
-		return Version{
-			Major: ProgVersion.Major,
-			Minor: ProgVersion.Minor,
-			Patch: ProgVersion.Patch,
-			Build: build,
-		}
-	}
-
-	// Default fallback
-	return ProgVersion
+	return revision
 }
 
+// String returns a formatted string representation of the version information.
 func (v Version) String() string {
-	ver := fmt.Sprintf("Version: %s.%s.%s", v.Major, v.Minor, v.Patch)
-	if v.Build != "" && v.Build != "dev" {
-		return fmt.Sprintf("%s Build: %s", ver, v.Build)
-	}
-	return ver
+	return fmt.Sprintf("Version: %s.%s.%s Build: %s", v.Major, v.Minor, v.Patch, v.Build)
 }
 
+// RuntimeVersion returns the Go runtime version information.
 func RuntimeVersion() string {
 	return fmt.Sprintf("Runtime: %s", runtime.Version())
 }
 
+// AllVersionBuildRuntimeInfo returns a combined string with version and runtime information.
 func AllVersionBuildRuntimeInfo() string {
 	return fmt.Sprintf("%s %s", ProgVersion.String(), RuntimeVersion())
 }

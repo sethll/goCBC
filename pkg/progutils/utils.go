@@ -34,12 +34,14 @@ import (
 	"github.com/sethll/goCBC/pkg/progmeta"
 )
 
+// StylesType defines the styling configuration for different UI elements.
 type StylesType struct {
 	Bedtime  lipgloss.Style
 	Caffeine lipgloss.Style
 	Header   lipgloss.Style
 }
 
+// TimeAndAmount represents a time entry with an associated substance amount.
 type TimeAndAmount struct {
 	TimeString string
 	Amount     float64
@@ -47,6 +49,7 @@ type TimeAndAmount struct {
 }
 
 var (
+	// Styles contains the styling configuration for different UI elements.
 	Styles = StylesType{
 		Bedtime: lipgloss.NewStyle().
 			Foreground(lipgloss.Color("#87CEEB")),
@@ -59,6 +62,7 @@ var (
 			Border(lipgloss.RoundedBorder()),
 	}
 
+	// LogLevelSelector maps verbosity levels to log levels.
 	LogLevelSelector = map[int]log.Level{
 		0: log.ErrorLevel,
 		1: log.WarnLevel,
@@ -67,6 +71,8 @@ var (
 	}
 )
 
+// GenerateOutputTable creates a formatted table displaying current substance levels
+// and anticipated bedtime based on the target amount.
 func GenerateOutputTable(chemInBody *float64, bedTime *time.Time, sleepTarget *string, chem *string) *table.Table {
 	slog.Debug("Generating output table", "chemInBody", *chemInBody, "bedTime", (*bedTime).Format("2006-01-02 15:04"), "sleepTarget", *sleepTarget)
 	rows := [][]string{
@@ -100,6 +106,8 @@ func GenerateOutputTable(chemInBody *float64, bedTime *time.Time, sleepTarget *s
 	return generatedTable
 }
 
+// GetTimesAndAmounts parses command-line time:amount strings into TimeAndAmount structs.
+// Input format should be "HHMM:amount" (e.g., "1100:300").
 func GetTimesAndAmounts(inputs *[]string) (returnList []TimeAndAmount) {
 	slog.Debug("Processing time and amount inputs", "inputCount", len(*inputs))
 	for _, eachItem := range *inputs {
@@ -126,6 +134,7 @@ func GetTimesAndAmounts(inputs *[]string) (returnList []TimeAndAmount) {
 	return
 }
 
+// PrintProgHeader displays the program header with name, version, and copyright information.
 func PrintProgHeader() {
 	slog.Debug("Printing program header", "progName", progmeta.ProgName, "version", progmeta.AllVersionBuildRuntimeInfo())
 	fmt.Println(
@@ -141,6 +150,8 @@ func PrintProgHeader() {
 	)
 }
 
+// RunHLCalculations performs half-life calculations for multiple substance intakes
+// and returns the current body content and time when target amount will be reached.
 func RunHLCalculations(timesAndAmounts *[]TimeAndAmount, targetAmount, chemHL *float64) (bodyChemContent float64, chemTargetReachedTime time.Time) {
 	firstItem, remainingItems := (*timesAndAmounts)[0], (*timesAndAmounts)[1:]
 	previousTimeMarker := firstItem.TimeObject
@@ -162,6 +173,7 @@ func RunHLCalculations(timesAndAmounts *[]TimeAndAmount, targetAmount, chemHL *f
 	return
 }
 
+// SortTimeEntries sorts a slice of TimeAndAmount structs by their TimeString field.
 func SortTimeEntries(timesAndAmounts []TimeAndAmount) []TimeAndAmount {
 	// Sort the slice of TimeAndAmount structs by TimeString
 	sort.Slice(timesAndAmounts, func(i, j int) bool {
@@ -171,6 +183,7 @@ func SortTimeEntries(timesAndAmounts []TimeAndAmount) []TimeAndAmount {
 	return timesAndAmounts
 }
 
+// StringToTitleCase converts a string to title case (first letter uppercase, rest lowercase).
 func StringToTitleCase(s string) string {
 	if len(s) == 0 {
 		return s
@@ -178,6 +191,7 @@ func StringToTitleCase(s string) string {
 	return strings.ToUpper(s[:1]) + strings.ToLower(s[1:])
 }
 
+// StringToFloat converts a string to a float64, returning 0.0 if conversion fails.
 func StringToFloat(input *string) float64 {
 	if f64, err := strconv.ParseFloat(*input, 64); err == nil {
 		slog.Debug("Float parsed from string", "input", *input, "f64", f64)
