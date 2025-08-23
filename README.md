@@ -22,6 +22,8 @@ Requires Go 1.23.0 or later.
 go install github.com/sethll/goCBC/cmd/goCBC@latest
 ```
 
+This method will not build the binary with the commit hash in version information, but it will be locked to the most recent tag. 
+
 #### Other Easy Method
 
 ```bash
@@ -30,7 +32,7 @@ cd goCBC
 make build
 ```
 
-The binary will be created as `./build/goCBC` in the project directory.
+The binary will be created as `./build/goCBC` in the project directory. The binary will include the commit hash in version information. 
 
 ##### Install to GOPATH
 
@@ -42,32 +44,35 @@ This installs the binary to `$GOPATH/bin/goCBC`.
 
 ## Usage
 
-```bash
-goCBC <target> '<time:amount>' [<time:amount>...]
+```
+goCBC [options] <target> '<time:amount>' ['<time:amount>' ...]
 ```
 
 ### Arguments
 
-- **target**: Target substance level in milligrams at bedtime (50-100mg recommended for caffeine)
-- **time:amount**: Substance intake in 24-hour format `'HHMM:amount'` (e.g., `'1100:300'` for 300mg at 11:00 AM)
+- **`target`**: Target substance level in milligrams at bedtime (50-100mg recommended for caffeine)
+- **`'time:amount'`**: Substance intake in 24-hour format `'HHMM:amount'` (e.g., `'1100:300'` for 300mg at 11:00 AM)
 
 ### Options
 
-- `-c, --chem <substance>`: Choose substance type (default: "caffeine")
+- `-c, --chem <substance>`: Choose substance (default: "caffeine")
+- `-h, --help`: Show help information
 - `--list-chems`: List all available substances with their half-lives
 - `-v, --verbose`: Increase verbosity (use `-v`, `-vv`, `-vvv` for more detail)
-- `-h, --help`: Show help information
+- `--version`: Show version information 
 
 ### Examples
 
 Calculate bedtime with caffeine intake:
 ```bash
-goCBC 75 '1100:300' '1500:150'
+goCBC 50 '1100:300' '1500:150'
+# equivalent to 
+# goCBC --chem caffeine 75 '1100:300' '1500:150'
 ```
 
 Calculate with nicotine:
 ```bash
-goCBC --chem nicotine 10 '0900:2' '1300:4'
+goCBC --chem nicotine 0.2 '0900:2' '1300:4'
 ```
 
 List available substances:
@@ -78,8 +83,8 @@ goCBC --list-chems
 ### Sample Output
 
 ```
-Current caffeine level: 125.3mg
-Anticipated bedtime: 22:30 (10:30 PM)
+ Caffeine remaining in system:     ~86mg
+ Reach target (50mg) for sleep at: 2025-08-23 03:30
 ```
 
 ## Development

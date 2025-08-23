@@ -49,8 +49,8 @@ var (
 	LongDesc  = `goCBC calculates when substances like caffeine and nicotine drop to target
 levels for restful sleep using pharmacokinetic half-life modeling. Supports
 multiple daily intakes with precise exponential decay calculations.`
-	Usage        = "goCBC [flags] <target> <time_amount...>"
-	UsageExample = "goCBC 75 '1100:300' '1500:5'"
+	Usage        = "goCBC [options] <target> '<time:amount>' ['<time:amount>' ...]"
+	UsageExample = "goCBC 50 '1100:300' '1500:150'"
 )
 
 // getVersionFromBuildInfo attempts to get version information from Go's build info
