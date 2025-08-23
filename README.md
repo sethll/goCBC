@@ -67,7 +67,7 @@ Calculate bedtime with caffeine intake:
 ```bash
 goCBC 50 '1100:300' '1500:150'
 # equivalent to 
-# goCBC --chem caffeine 75 '1100:300' '1500:150'
+# goCBC --chem caffeine 50 '1100:300' '1500:150'
 ```
 
 Calculate with nicotine:
