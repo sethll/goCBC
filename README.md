@@ -7,8 +7,8 @@ A Go implementation of the [caffeine-bedtime-calculator](https://github.com/seth
 goCBC helps you determine the optimal bedtime based on your substance intake throughout the day. By modeling the exponential decay of substances like caffeine using their known metabolic half-lives, the tool calculates when levels will drop to your desired target amount to improve sleep quality.
 
 Supported substances:
-- Caffeine (default) (4.7 hour half-life)
-- Nicotine (1.7 hour half-life)
+- Caffeine (default) (5.0 hour half-life)
+- Nicotine (4.2 hour half-life)
 
 ## Installation
 

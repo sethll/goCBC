@@ -34,8 +34,8 @@ var (
 	}
 	// HalfLife contains the half-life values for all supported substances.
 	HalfLife = HalfLifeStruct{
-		Caffeine: 4.7,
-		Nicotine: 1.7,
+		Caffeine: 5.0,
+		Nicotine: 4.2,
 	}
 )
 
