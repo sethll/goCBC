@@ -36,9 +36,12 @@ import (
 
 // StylesType defines the styling configuration for different UI elements.
 type StylesType struct {
-	Bedtime  lipgloss.Style
-	Caffeine lipgloss.Style
-	Header   lipgloss.Style
+	Bedtime      lipgloss.Style
+	Caffeine     lipgloss.Style
+	Header       lipgloss.Style
+	TableHeader  lipgloss.Style
+	TableEvenRow lipgloss.Style
+	TableOddRow  lipgloss.Style
 }
 
 // TimeAndAmount represents a time entry with an associated substance amount.
@@ -57,9 +60,16 @@ var (
 			Foreground(lipgloss.Color("#FFA500")),
 		Header: lipgloss.NewStyle().
 			Bold(true).
-			Foreground(lipgloss.Color("#FFFFFF")).
 			Padding(1, 2).
 			Border(lipgloss.RoundedBorder()),
+		TableHeader: lipgloss.NewStyle().
+			Bold(true).
+			Padding(0, 2),
+		TableEvenRow: lipgloss.NewStyle().
+			Padding(0, 2),
+		TableOddRow: lipgloss.NewStyle().
+			Padding(0, 2).
+			Background(lipgloss.Color("#888888")),
 	}
 
 	// LogLevelSelector maps verbosity levels to log levels.

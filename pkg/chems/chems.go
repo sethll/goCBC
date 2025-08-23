@@ -23,6 +23,7 @@ import (
 
 	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/lipgloss/table"
+	"github.com/sethll/goCBC/pkg/progutils"
 )
 
 // HalfLifeStruct represents the half-life values for different substances in hours.
@@ -63,6 +64,23 @@ func genChemOutputTable() *table.Table {
 		rows = append(rows, []string{chemName, fmt.Sprintf("%.2f hours", halfLife)})
 	}
 
-	chemTable := table.New().Border(lipgloss.HiddenBorder()).Rows(rows...).Headers(header...)
+	//chemTable := table.New().Border(lipgloss.HiddenBorder()).BorderHeader(true).Rows(rows...).Headers(header...)
+	chemTable := table.New().
+		Headers(header...).Rows(rows...).
+		StyleFunc(func(row, col int) lipgloss.Style {
+			switch {
+			case row == table.HeaderRow:
+				return progutils.Styles.TableHeader
+			default:
+				return progutils.Styles.TableEvenRow
+				//saving these lines for when there are more chems
+				//case row%2 == 0:
+				//	return progutils.Styles.TableEvenRow
+				//default:
+				//	return progutils.Styles.TableOddRow
+			}
+		}).
+		BorderHeader(true)
+
 	return chemTable
 }

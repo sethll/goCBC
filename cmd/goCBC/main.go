@@ -41,10 +41,6 @@ var (
 	showVersion bool
 )
 
-func init() {
-	initLogging()
-}
-
 func main() {
 	rootCmd := &cobra.Command{
 		Use:     progmeta.Usage,
@@ -67,6 +63,7 @@ func main() {
 				progmeta.PlainPrintVersionInfo()
 				return
 			}
+			progutils.PrintProgHeader()
 			if listChems {
 				chems.ListAvailableChems()
 				return
@@ -83,6 +80,7 @@ func main() {
 	//	return []string{"caffeine", "nicotine"}, cobra.ShellCompDirectiveDefault
 	//})
 	rootCmd.PreRunE = func(cmd *cobra.Command, args []string) error {
+		initLogging()
 		if halfLife, exists := chems.Available[chem]; exists {
 			chemMHL = halfLife
 		} else {
@@ -97,8 +95,6 @@ func main() {
 }
 
 func runApp(args []string) {
-	progutils.PrintProgHeader()
-
 	firstArg := args[0]
 	remainingArgs := args[1:]
 
