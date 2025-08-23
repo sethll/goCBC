@@ -18,7 +18,12 @@ package chems
 	along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/charmbracelet/lipgloss"
+	"github.com/charmbracelet/lipgloss/table"
+)
 
 // HalfLifeStruct represents the half-life values for different substances in hours.
 type HalfLifeStruct struct {
@@ -34,15 +39,30 @@ var (
 	}
 	// HalfLife contains the half-life values for all supported substances.
 	HalfLife = HalfLifeStruct{
-		Caffeine: 5.0,
-		Nicotine: 4.2,
+		Caffeine: 5.00,
+		Nicotine: 4.25,
 	}
+	DefaultChem = "caffeine"
 )
 
 // ListAvailableChems prints a formatted list of all available substances and their half-lives.
 func ListAvailableChems() {
 	fmt.Println("Available chem options:")
-	for chemName, halfLife := range Available {
-		fmt.Printf("  %s (half-life: %.1f hours)\n", chemName, halfLife)
+	fmt.Println(genChemOutputTable())
+}
+
+func genChemOutputTable() *table.Table {
+	header := []string{
+		"Chem", "Half-life",
 	}
+	var rows [][]string
+	for chemName, halfLife := range Available {
+		if chemName == DefaultChem {
+			chemName = fmt.Sprintf("%s (default)", chemName)
+		}
+		rows = append(rows, []string{chemName, fmt.Sprintf("%.2f hours", halfLife)})
+	}
+
+	chemTable := table.New().Border(lipgloss.HiddenBorder()).Rows(rows...).Headers(header...)
+	return chemTable
 }

@@ -46,7 +46,7 @@ var (
 	ProgVersion = Version{
 		Major: "0",
 		Minor: "1",
-		Patch: "3",
+		Patch: "4",
 		Build: build,
 	}
 	// ShortDesc is a brief description of the program.
