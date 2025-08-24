@@ -169,14 +169,16 @@ func RunHLCalculations(timesAndAmounts *[]TimeAndAmount, targetAmount, chemHL *f
 
 	for _, eachTAndA := range remainingItems {
 		elapsedTime := eachTAndA.TimeObject.Sub(previousTimeMarker)
-		bodyChemContent = hlcalc.CalcSubstanceInBody(bodyChemContent, elapsedTime.Hours(), *chemHL)
+		etHours := elapsedTime.Hours()
+		bodyChemContent = hlcalc.CalcSubstanceInBody(&bodyChemContent, &etHours, chemHL)
 		bodyChemContent += eachTAndA.Amount
 		previousTimeMarker = eachTAndA.TimeObject
 	}
 
 	currentTime := GetCurrentTime()
 	elapsedTime := currentTime.Sub(previousTimeMarker)
-	bodyChemContent = hlcalc.CalcSubstanceInBody(bodyChemContent, elapsedTime.Hours(), *chemHL)
+	etHours := elapsedTime.Hours()
+	bodyChemContent = hlcalc.CalcSubstanceInBody(&bodyChemContent, &etHours, chemHL)
 
 	tValue := hlcalc.CalcTimeToGivenAmt(targetAmount, &bodyChemContent, chemHL)
 	chemTargetReachedTime = currentTime.Add(time.Duration(tValue * float64(time.Hour)))

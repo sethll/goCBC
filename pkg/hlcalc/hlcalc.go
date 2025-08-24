@@ -37,15 +37,15 @@ import (
 // using exponential decay based on half-life. Uses the formula:
 // X = Xo * (1/2)^(T/M)
 // where X is remaining amount, Xo is initial amount, T is time elapsed, M is metabolic half-life.
-func CalcSubstanceInBody(initialAmount, timeInHours, metabolicHalfLife float64) (mgSubstanceInBody float64) {
+func CalcSubstanceInBody(initialAmount, timeInHours, metabolicHalfLife *float64) (mgSubstanceInBody float64) {
 	slog.Debug("CalcSubstanceInBody called",
-		"initialAmount", initialAmount,
-		"timeInHours", timeInHours,
+		"initialAmount", *initialAmount,
+		"timeInHours", *timeInHours,
 		"metabolicHalfLife", metabolicHalfLife)
 
-	timeOverHalflife := timeInHours / metabolicHalfLife
+	timeOverHalflife := *timeInHours / *metabolicHalfLife
 	intermediaryCalc := math.Pow(1.0/2.0, timeOverHalflife)
-	mgSubstanceInBody = initialAmount * intermediaryCalc
+	mgSubstanceInBody = *initialAmount * intermediaryCalc
 
 	slog.Debug("CalcSubstanceInBody calculation",
 		"timeOverHalflife", timeOverHalflife,
@@ -70,9 +70,9 @@ func CalcSubstanceInBody(initialAmount, timeInHours, metabolicHalfLife float64) 
 // where T is time, M is metabolic half-life, Ca is target amount, Xo is initial amount.
 func CalcTimeToGivenAmt(givenAmt, initialAmt, metabolicHalfLife *float64) (timeToGivenAmt float64) {
 	slog.Debug("CalcTimeToGivenAmt called",
-		"givenAmt", givenAmt,
-		"initialAmt", initialAmt,
-		"metabolicHalfLife", metabolicHalfLife)
+		"givenAmt", *givenAmt,
+		"initialAmt", *initialAmt,
+		"metabolicHalfLife", *metabolicHalfLife)
 
 	lnOfOneHalf := math.Log(1.0 / 2.0)
 	givenAmtOverInit := *givenAmt / *initialAmt
