@@ -39,6 +39,7 @@ var (
 	chemMHL     float64
 	listChems   bool
 	showVersion bool
+	quiet       bool
 )
 
 func main() {
@@ -61,8 +62,11 @@ func main() {
 		},
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			initLogging()
-			progutils.PrintProgHeader()
-			
+
+			if !quiet {
+				progutils.PrintProgHeader()
+			}
+
 			if halfLife, exists := chems.Available[chem]; exists {
 				chemMHL = halfLife
 			} else {
@@ -83,6 +87,7 @@ func main() {
 	rootCmd.Flags().CountVarP(&verbosity, "verbose", "v", "increase verbosity (use -v, -vv, -vvv)")
 	rootCmd.Flags().StringVarP(&chem, "chem", "c", "caffeine", "choose chem")
 	rootCmd.Flags().BoolVar(&listChems, "list-chems", false, "list all available chem options")
+	rootCmd.Flags().BoolVarP(&quiet, "quiet", "q", false, "don't show program header")
 	//rootCmd.RegisterFlagCompletionFunc("chem", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 	//	return []string{"caffeine", "nicotine"}, cobra.ShellCompDirectiveDefault
 	//})
