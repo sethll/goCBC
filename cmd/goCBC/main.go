@@ -77,7 +77,7 @@ func main() {
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			if listChems {
-				chems.ListAvailableChems()
+				progutils.ListAvailableChems()
 				return
 			}
 			runApp(args)

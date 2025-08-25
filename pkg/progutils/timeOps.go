@@ -21,6 +21,7 @@ package progutils
 import (
 	"fmt"
 	"log/slog"
+	"sort"
 	"strconv"
 	"time"
 )
@@ -125,4 +126,14 @@ func getTimeObject(input *[]int) time.Time {
 	)
 	slog.Debug("Time object created", "timeObject", timeObject.Format("2006-01-02 15:04:05"))
 	return timeObject
+}
+
+// sortTimeEntries sorts a slice of TimeAndAmount structs by their TimeString field.
+func sortTimeEntries(timesAndAmounts []TimeAndAmount) []TimeAndAmount {
+	// Sort the slice of TimeAndAmount structs by TimeString
+	sort.Slice(timesAndAmounts, func(i, j int) bool {
+		return timesAndAmounts[i].TimeString < timesAndAmounts[j].TimeString
+	})
+	slog.Info("Sorted timesAndAmounts by TimeAndAmount.TimeString", "timesAndAmounts", timesAndAmounts)
+	return timesAndAmounts
 }
