@@ -99,17 +99,19 @@ func main() {
 func runApp(args []string) {
 	firstArg := args[0]
 	remainingArgs := args[1:]
+	results := progutils.NewResults()
 
 	targetAmount := progutils.StringToFloat(&firstArg)
 	timesAndAmounts := progutils.GetTimesAndAmounts(&remainingArgs)
-	timesAndAmounts = progutils.SortTimeEntries(timesAndAmounts)
 
 	slog.Info("Finalized time/amount inputs", "targetAmount", targetAmount, "timesAndAmounts", timesAndAmounts)
 
-	bodyChemContent, chemTargetReachedTime := progutils.RunHLCalculations(&timesAndAmounts, &targetAmount, &chemMHL)
+	progutils.RunHLCalculations(&results, &timesAndAmounts, &targetAmount, &chemMHL)
+
+	slog.Info("Finished RunHLCalculations", "results", (&results).String())
 
 	// Generate and print output
-	fmt.Println(progutils.GenerateOutputTable(&bodyChemContent, &chemTargetReachedTime, &firstArg, &chem))
+	fmt.Println(progutils.GenerateOutputTable(&results.BodyChemContent, &results.WearoffTime, &firstArg, &chem))
 }
 
 func initLogging() {

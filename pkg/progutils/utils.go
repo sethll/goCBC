@@ -51,6 +51,16 @@ type TimeAndAmount struct {
 	TimeObject time.Time
 }
 
+type Results struct {
+	ChemIngestedTotal            float64
+	BodyChemContent              float64
+	TheoreticalChemIngestedTotal float64
+	TheoreticalBodyChemContent   float64
+	LastRealTime                 time.Time
+	WearoffTime                  time.Time
+	TheoreticalWearoffTime       time.Time
+}
+
 var (
 	// Styles contains the styling configuration for different UI elements.
 	Styles = StylesType{
@@ -140,8 +150,22 @@ func GetTimesAndAmounts(inputs *[]string) (returnList []TimeAndAmount) {
 			slog.Warn("Discarding entry", "TimeString", eachTAndA.TimeString)
 		}
 	}
+	returnList = sortTimeEntries(returnList)
 	slog.Debug("Completed processing inputs", "validEntries", len(returnList), "totalInputs", len(*inputs))
 	return
+}
+
+// NewResults initializes a new Results
+func NewResults() Results {
+	return Results{
+		ChemIngestedTotal:            0,
+		BodyChemContent:              0,
+		TheoreticalChemIngestedTotal: 0,
+		TheoreticalBodyChemContent:   0,
+		LastRealTime:                 time.Time{},
+		WearoffTime:                  time.Time{},
+		TheoreticalWearoffTime:       time.Time{},
+	}
 }
 
 // PrintProgHeader displays the program header with name, version, and copyright information.
@@ -160,33 +184,177 @@ func PrintProgHeader() {
 	)
 }
 
-// RunHLCalculations performs half-life calculations for multiple substance intakes
-// and returns the current body content and time when target amount will be reached.
-func RunHLCalculations(timesAndAmounts *[]TimeAndAmount, targetAmount, chemHL *float64) (bodyChemContent float64, chemTargetReachedTime time.Time) {
-	firstItem, remainingItems := (*timesAndAmounts)[0], (*timesAndAmounts)[1:]
-	previousTimeMarker := firstItem.TimeObject
-	bodyChemContent = firstItem.Amount
-
-	for _, eachTAndA := range remainingItems {
-		elapsedTime := eachTAndA.TimeObject.Sub(previousTimeMarker)
-		etHours := elapsedTime.Hours()
-		bodyChemContent = hlcalc.CalcSubstanceInBody(&bodyChemContent, &etHours, chemHL)
-		bodyChemContent += eachTAndA.Amount
-		previousTimeMarker = eachTAndA.TimeObject
-	}
-
-	currentTime := GetCurrentTime()
-	elapsedTime := currentTime.Sub(previousTimeMarker)
-	etHours := elapsedTime.Hours()
-	bodyChemContent = hlcalc.CalcSubstanceInBody(&bodyChemContent, &etHours, chemHL)
-
-	tValue := hlcalc.CalcTimeToGivenAmt(targetAmount, &bodyChemContent, chemHL)
-	chemTargetReachedTime = currentTime.Add(time.Duration(tValue * float64(time.Hour)))
-	return
+func (r *Results) String() string {
+	return fmt.Sprintf("Results{ChemIngestedTotal: %.2f, BodyChemContent: %.2f, TheoreticalChemIngestedTotal: %.2f, TheoreticalBodyChemContent: %.2f, LastRealTime: %s, WearoffTime: %s, TheoreticalWearoffTime: %s}",
+		r.ChemIngestedTotal,
+		r.BodyChemContent,
+		r.TheoreticalChemIngestedTotal,
+		r.TheoreticalBodyChemContent,
+		r.LastRealTime.Format("2006-01-02 15:04:05"),
+		r.WearoffTime.Format("2006-01-02 15:04:05"),
+		r.TheoreticalWearoffTime.Format("2006-01-02 15:04:05"))
 }
 
-// SortTimeEntries sorts a slice of TimeAndAmount structs by their TimeString field.
-func SortTimeEntries(timesAndAmounts []TimeAndAmount) []TimeAndAmount {
+func (r *Results) getChemIngestedTotal(theoreticalMode bool) float64 {
+	if theoreticalMode {
+		slog.Debug("Returning theoretical", "TCIT", r.TheoreticalChemIngestedTotal)
+		return r.TheoreticalChemIngestedTotal
+	} else {
+		slog.Debug("Returning real", "CIT", r.ChemIngestedTotal)
+		return r.ChemIngestedTotal
+	}
+}
+
+func (r *Results) setChemIngestedTotal(theoreticalMode bool, input float64) {
+	if theoreticalMode {
+		r.TheoreticalChemIngestedTotal = input
+		slog.Debug("Setting theoretical", "input", input, "TCIT", r.TheoreticalChemIngestedTotal)
+	} else {
+		r.ChemIngestedTotal = input
+		slog.Debug("Setting real", "input", input, "CIT", r.ChemIngestedTotal)
+	}
+}
+
+func (r *Results) getBodyChemContent(theoreticalMode bool) float64 {
+	if theoreticalMode {
+		slog.Debug("Returning theoretical", "TBCC", r.TheoreticalBodyChemContent)
+		return r.TheoreticalBodyChemContent
+	} else {
+		slog.Debug("Returning theoretical", "BCC", r.BodyChemContent)
+		return r.BodyChemContent
+	}
+}
+
+func (r *Results) setBodyChemContent(theoreticalMode bool, input float64) {
+	if theoreticalMode {
+		r.TheoreticalBodyChemContent = input
+		slog.Debug("Setting theoretical", "input", input, "TBCC", r.TheoreticalBodyChemContent)
+	} else {
+		r.BodyChemContent = input
+		slog.Debug("Setting real", "input", input, "BCC", r.BodyChemContent)
+	}
+}
+
+// RunHLCalculations performs half-life calculations for multiple substance intakes
+// and returns the current body content and time when target amount will be reached.
+func RunHLCalculations(results *Results, timesAndAmounts *[]TimeAndAmount, targetAmount, chemHL *float64) {
+	slog.Debug("RunHLCalculations started",
+		"targetAmount", *targetAmount,
+		"chemHL", *chemHL,
+		"entryCount", len(*timesAndAmounts))
+
+	currentTime := GetCurrentTime() // timeOps.go
+	theoreticalMode := false
+	var timeMarker time.Time
+
+	slog.Debug("Initial state",
+		"currentTime", currentTime.Format("2006-01-02 15:04:05"),
+		"theoreticalMode", theoreticalMode)
+
+	for i, eachItem := range *timesAndAmounts {
+		slog.Debug("Processing entry",
+			"index", i,
+			"timeString", eachItem.TimeString,
+			"amount", eachItem.Amount,
+			"timeObject", eachItem.TimeObject.Format("2006-01-02 15:04:05"))
+
+		if !theoreticalMode && currentTime.Before(eachItem.TimeObject) {
+			slog.Info(
+				"Current time is before provided time. Activating theoretical mode",
+				"currentTime", currentTime,
+				"TimeObject", eachItem.TimeObject,
+			)
+			slog.Debug("Setting TBCC = BCC", "TBCC", (*results).TheoreticalBodyChemContent, "BCC", (*results).BodyChemContent)
+			(*results).TheoreticalBodyChemContent = (*results).BodyChemContent
+			theoreticalMode = true
+			slog.Debug("Switched to theoretical mode", "theoreticalMode", theoreticalMode)
+		} else if !theoreticalMode {
+			(*results).LastRealTime = eachItem.TimeObject
+			slog.Debug("Updated LastRealTime", "lastRealTime", results.LastRealTime.Format("2006-01-02 15:04:05"))
+		}
+
+		oldTotal := results.getChemIngestedTotal(theoreticalMode)
+		newTotal := oldTotal + eachItem.Amount
+		results.setChemIngestedTotal(theoreticalMode, newTotal)
+		slog.Debug("Updated ingested total",
+			"theoreticalMode", theoreticalMode,
+			"oldTotal", oldTotal,
+			"addedAmount", eachItem.Amount,
+			"newTotal", newTotal)
+
+		// logic for if first index item, only set initial values and don't process
+		if i == 0 {
+			timeMarker = eachItem.TimeObject
+			results.setBodyChemContent(theoreticalMode, eachItem.Amount)
+			slog.Debug("First entry processed",
+				"timeMarker", timeMarker.Format("2006-01-02 15:04:05"),
+				"initialBodyContent", eachItem.Amount,
+				"theoreticalMode", theoreticalMode)
+			continue
+		}
+
+		etHours := GetElapsedHours(&timeMarker, &eachItem.TimeObject) // timeOps.go
+		localBCC := results.getBodyChemContent(theoreticalMode)
+		slog.Debug("Before decay calculation", "bodyChemContent", localBCC)
+
+		localBCC = hlcalc.CalcSubstanceInBody(&localBCC, &etHours, chemHL)
+		slog.Debug("After decay calculation", "bodyChemContent", localBCC)
+
+		localBCC += eachItem.Amount
+		results.setBodyChemContent(theoreticalMode, localBCC)
+		slog.Debug("After adding new amount",
+			"addedAmount", eachItem.Amount,
+			"finalBodyChemContent", localBCC,
+			"theoreticalMode", theoreticalMode)
+
+		timeMarker = eachItem.TimeObject
+		slog.Debug("Updated timeMarker", "timeMarker", timeMarker.Format("2006-01-02 15:04:05"))
+	}
+
+	slog.Debug("Processing final calculations",
+		"realIngestedTotal", (*results).ChemIngestedTotal,
+		"theoreticalIngestedTotal", (*results).TheoreticalChemIngestedTotal)
+
+	if (*results).ChemIngestedTotal > 0 {
+		slog.Debug("Calculating real wearoff time")
+
+		etHours := GetElapsedHours(&results.LastRealTime, &currentTime) // timeOps.go
+		localBCC := (*results).BodyChemContent
+		slog.Debug("Before final decay calculation", "bodyChemContent", localBCC)
+
+		localBCC = hlcalc.CalcSubstanceInBody(&localBCC, &etHours, chemHL)
+		(*results).BodyChemContent = localBCC
+		slog.Debug("After final decay calculation", "bodyChemContent", localBCC)
+
+		tValue := hlcalc.CalcTimeToGivenAmt(targetAmount, &localBCC, chemHL)
+		(*results).WearoffTime = AddTime(&currentTime, &tValue) // timeOps.go
+		slog.Debug("Real wearoff time calculated",
+			"tValue", tValue,
+			"wearoffTime", (*results).WearoffTime.Format("2006-01-02 15:04:05"))
+	}
+
+	if (*results).TheoreticalChemIngestedTotal > 0 {
+		slog.Debug("Calculating theoretical wearoff time")
+		//localBCC := (*results).TheoreticalBodyChemContent
+		slog.Debug("Theoretical body chem content", "bodyChemContent", (*results).TheoreticalBodyChemContent)
+
+		tValue := hlcalc.CalcTimeToGivenAmt(targetAmount, &(*results).TheoreticalBodyChemContent, chemHL)
+		(*results).TheoreticalWearoffTime = AddTime(&timeMarker, &tValue) // timeOps.go
+		slog.Debug("Theoretical wearoff time calculated",
+			"tValue", tValue,
+			"timeMarker", timeMarker.Format("2006-01-02 15:04:05"),
+			"theoreticalWearoffTime", (*results).TheoreticalWearoffTime.Format("2006-01-02 15:04:05"))
+	}
+
+	slog.Debug("RunHLCalculations completed",
+		"finalBodyChemContent", (*results).BodyChemContent,
+		"finalTheoreticalBodyChemContent", (*results).TheoreticalBodyChemContent,
+		"wearoffTime", (*results).WearoffTime.Format("2006-01-02 15:04:05"),
+		"theoreticalWearoffTime", (*results).TheoreticalWearoffTime.Format("2006-01-02 15:04:05"))
+}
+
+// sortTimeEntries sorts a slice of TimeAndAmount structs by their TimeString field.
+func sortTimeEntries(timesAndAmounts []TimeAndAmount) []TimeAndAmount {
 	// Sort the slice of TimeAndAmount structs by TimeString
 	sort.Slice(timesAndAmounts, func(i, j int) bool {
 		return timesAndAmounts[i].TimeString < timesAndAmounts[j].TimeString

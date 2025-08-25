@@ -42,11 +42,28 @@ func GetBeginningOfToday(currentTime *time.Time) time.Time {
 	return beginningOfDay
 }
 
+// AddTime returns the duration (float, hours) plus the start
+func AddTime(start *time.Time, duration *float64) time.Time {
+	return (*start).Add(time.Duration(*duration * float64(time.Hour)))
+}
+
 // GetCurrentTime returns the current local time.
 func GetCurrentTime() time.Time {
 	currentTime := time.Now()
 	slog.Debug("Retrieved current time", "currentTime", currentTime.Format("2006-01-02 15:04:05"))
 	return currentTime
+}
+
+// GetElapsedHours returns the number of hours passed from input1 to input2
+func GetElapsedHours(start, end *time.Time) float64 {
+	elapsedTime := (*end).Sub(*start)
+	etHours := elapsedTime.Hours()
+	slog.Debug("Time calculations",
+		"elapsedTime", elapsedTime,
+		"etHours", etHours,
+		"previousTimeMarker", (*start).Format("2006-01-02 15:04:05"),
+		"currentTimeMarker", (*end).Format("2006-01-02 15:04:05"))
+	return etHours
 }
 
 // ValidateTime validates that the time input is a proper 24-hour format time (HHMM).
