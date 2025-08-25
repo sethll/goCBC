@@ -24,6 +24,7 @@ import (
 
 	"github.com/charmbracelet/log"
 	"github.com/sethll/goCBC/pkg/chems"
+	"github.com/sethll/goCBC/pkg/hlcalc"
 	"github.com/sethll/goCBC/pkg/progmeta"
 	"github.com/sethll/goCBC/pkg/progutils"
 	"github.com/spf13/cobra"
@@ -106,7 +107,7 @@ func runApp(args []string) {
 
 	slog.Info("Finalized time/amount inputs", "targetAmount", targetAmount, "timesAndAmounts", timesAndAmounts)
 
-	progutils.RunHLCalculations(&results, &timesAndAmounts, &targetAmount, &chemMHL)
+	hlcalc.RunHLCalculations(&results, &timesAndAmounts, &targetAmount, &chemMHL)
 
 	slog.Info("Finished RunHLCalculations", "results", (&results).String())
 

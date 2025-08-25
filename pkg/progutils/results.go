@@ -58,7 +58,7 @@ func (r *Results) String() string {
 		r.TheoreticalWearoffTime.Format("2006-01-02 15:04:05"))
 }
 
-func (r *Results) getChemIngestedTotal(theoreticalMode bool) float64 {
+func (r *Results) GetChemIngestedTotal(theoreticalMode bool) float64 {
 	if theoreticalMode {
 		slog.Debug("Returning theoretical", "TCIT", r.TheoreticalChemIngestedTotal)
 		return r.TheoreticalChemIngestedTotal
@@ -68,7 +68,7 @@ func (r *Results) getChemIngestedTotal(theoreticalMode bool) float64 {
 	}
 }
 
-func (r *Results) setChemIngestedTotal(theoreticalMode bool, input float64) {
+func (r *Results) SetChemIngestedTotal(theoreticalMode bool, input float64) {
 	if theoreticalMode {
 		r.TheoreticalChemIngestedTotal = input
 		slog.Debug("Setting theoretical", "input", input, "TCIT", r.TheoreticalChemIngestedTotal)
@@ -78,7 +78,7 @@ func (r *Results) setChemIngestedTotal(theoreticalMode bool, input float64) {
 	}
 }
 
-func (r *Results) getBodyChemContent(theoreticalMode bool) float64 {
+func (r *Results) GetBodyChemContent(theoreticalMode bool) float64 {
 	if theoreticalMode {
 		slog.Debug("Returning theoretical", "TBCC", r.TheoreticalBodyChemContent)
 		return r.TheoreticalBodyChemContent
@@ -88,7 +88,7 @@ func (r *Results) getBodyChemContent(theoreticalMode bool) float64 {
 	}
 }
 
-func (r *Results) setBodyChemContent(theoreticalMode bool, input float64) {
+func (r *Results) SetBodyChemContent(theoreticalMode bool, input float64) {
 	if theoreticalMode {
 		r.TheoreticalBodyChemContent = input
 		slog.Debug("Setting theoretical", "input", input, "TBCC", r.TheoreticalBodyChemContent)
