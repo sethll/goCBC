@@ -1,17 +1,5 @@
 package progutils
 
-import (
-	"fmt"
-	"log/slog"
-	"math"
-	"time"
-
-	"github.com/charmbracelet/lipgloss"
-	"github.com/charmbracelet/lipgloss/table"
-	"github.com/sethll/goCBC/pkg/chems"
-	"github.com/sethll/goCBC/pkg/progmeta"
-)
-
 /*
 	goCBC
 	Copyright (C) 2025  Seth L
@@ -29,6 +17,18 @@ import (
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+
+import (
+	"fmt"
+	"log/slog"
+	"math"
+	"time"
+
+	"github.com/charmbracelet/lipgloss"
+	"github.com/charmbracelet/lipgloss/table"
+	"github.com/sethll/goCBC/pkg/chems"
+	"github.com/sethll/goCBC/pkg/progmeta"
+)
 
 // GenerateOutputTable creates a formatted table displaying current substance levels
 // and anticipated bedtime based on the target amount.

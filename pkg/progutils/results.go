@@ -1,11 +1,5 @@
 package progutils
 
-import (
-	"fmt"
-	"log/slog"
-	"time"
-)
-
 /*
 	goCBC
 	Copyright (C) 2025  Seth L
@@ -23,6 +17,12 @@ import (
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+
+import (
+	"fmt"
+	"log/slog"
+	"time"
+)
 
 type Results struct {
 	ChemIngestedTotal            float64

@@ -1,7 +1,5 @@
 package progutils
 
-import "github.com/charmbracelet/lipgloss"
-
 /*
 	goCBC
 	Copyright (C) 2025  Seth L
@@ -19,6 +17,8 @@ import "github.com/charmbracelet/lipgloss"
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+
+import "github.com/charmbracelet/lipgloss"
 
 // StylesType defines the styling configuration for different UI elements.
 type StylesType struct {
