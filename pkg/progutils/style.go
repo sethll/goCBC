@@ -22,8 +22,8 @@ import "github.com/charmbracelet/lipgloss"
 
 // StylesType defines the styling configuration for different UI elements.
 type StylesType struct {
-	Bedtime      lipgloss.Style
-	Caffeine     lipgloss.Style
+	Wearoff      lipgloss.Style
+	Chem         lipgloss.Style
 	Header       lipgloss.Style
 	TableHeader  lipgloss.Style
 	TableEvenRow lipgloss.Style
@@ -33,10 +33,10 @@ type StylesType struct {
 var (
 	// Styles contains the styling configuration for different UI elements.
 	Styles = StylesType{
-		Bedtime: lipgloss.NewStyle().
-			Foreground(lipgloss.Color("#87CEEB")),
-		Caffeine: lipgloss.NewStyle().
-			Foreground(lipgloss.Color("#FFA500")),
+		Wearoff: lipgloss.NewStyle().
+			Foreground(lipgloss.Color("31")), // "#87CEEB" "#005f87"
+		Chem: lipgloss.NewStyle().
+			Foreground(lipgloss.Color("130")), // "#FFA500"
 		Header: lipgloss.NewStyle().
 			Bold(true).
 			Padding(1, 2).

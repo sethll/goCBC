@@ -49,8 +49,8 @@ var (
 	// ProgVersion contains the current version information for the program.
 	ProgVersion = Version{
 		Major:    "0",
-		Minor:    "2",
-		Patch:    "1",
+		Minor:    "3",
+		Patch:    "0",
 		Build:    build,
 		Runtime:  runtime.Version(),
 		Platform: getPlatform(),

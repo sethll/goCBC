@@ -30,17 +30,82 @@ import (
 	"github.com/sethll/goCBC/pkg/progmeta"
 )
 
-// GenerateOutputTable creates a formatted table displaying current substance levels
+// GenerateOutputTableV1 creates a formatted table displaying current substance levels
+// and anticipated wearoff time based on the target amount.
+func GenerateOutputTableV1(r *Results, wearoffTarget *string, chem *string) *table.Table {
+	slog.Debug("Generating output table", "wearoffTarget", *wearoffTarget, "chem", *chem, "results", (*r).String())
+	rows := [][]string{
+		{
+			fmt.Sprintf(
+				"%s remaining in system:",
+				Styles.Chem.Render(StringToTitleCase(*chem)),
+			),
+			Styles.Chem.Render(
+				fmt.Sprintf(
+					"~%.0fmg",
+					math.Round((*r).BodyChemContent),
+				),
+			),
+		},
+		{
+			fmt.Sprintf(
+				"Reach target (%s) for %s at:",
+				Styles.Chem.Render(
+					fmt.Sprintf("%smg", *wearoffTarget),
+				),
+				Styles.Wearoff.Render("wear-off"),
+			),
+			Styles.Wearoff.Render(
+				(*r).WearoffTime.Format("2006-01-02 15:04"),
+			),
+		},
+	}
+	if (*r).TheoreticalChemIngestedTotal > 0 {
+		rows = append(rows,
+			[]string{
+				fmt.Sprintf(
+					"Future %s intake total:",
+					Styles.Chem.Render(*chem),
+				),
+				Styles.Chem.Render(
+					fmt.Sprintf(
+						"%.0fmg",
+						math.Round((*r).TheoreticalChemIngestedTotal),
+					),
+				),
+			},
+		)
+		rows = append(rows,
+			[]string{
+				fmt.Sprintf(
+					"With future intake reach %s target (%s) at:",
+					Styles.Wearoff.Render("wear-off"),
+					Styles.Chem.Render(
+						fmt.Sprintf("%smg", *wearoffTarget),
+					),
+				),
+				Styles.Wearoff.Render(
+					(*r).TheoreticalWearoffTime.Format("2006-01-02 15:04"),
+				),
+			},
+		)
+	}
+	generatedTable := table.New().Border(lipgloss.HiddenBorder()).Rows(rows...)
+	slog.Debug("Output table generated successfully", "rowCount", len(rows))
+	return generatedTable
+}
+
+// GenerateOutputTablev0 creates a formatted table displaying current substance levels
 // and anticipated bedtime based on the target amount.
-func GenerateOutputTable(chemInBody *float64, bedTime *time.Time, sleepTarget *string, chem *string) *table.Table {
+func GenerateOutputTablev0(chemInBody *float64, bedTime *time.Time, sleepTarget *string, chem *string) *table.Table {
 	slog.Debug("Generating output table", "chemInBody", *chemInBody, "bedTime", (*bedTime).Format("2006-01-02 15:04"), "sleepTarget", *sleepTarget)
 	rows := [][]string{
 		{
 			fmt.Sprintf(
 				"%s remaining in system:",
-				Styles.Caffeine.Render(StringToTitleCase(*chem)),
+				Styles.Chem.Render(StringToTitleCase(*chem)),
 			),
-			Styles.Caffeine.Render(
+			Styles.Chem.Render(
 				fmt.Sprintf(
 					"~%.0fmg",
 					math.Round(*chemInBody),
@@ -50,12 +115,12 @@ func GenerateOutputTable(chemInBody *float64, bedTime *time.Time, sleepTarget *s
 		{
 			fmt.Sprintf(
 				"Reach target (%s) for %s at:",
-				Styles.Caffeine.Render(
+				Styles.Chem.Render(
 					fmt.Sprintf("%smg", *sleepTarget),
 				),
-				Styles.Bedtime.Render("sleep"),
+				Styles.Wearoff.Render("sleep"),
 			),
-			Styles.Bedtime.Render(
+			Styles.Wearoff.Render(
 				(*bedTime).Format("2006-01-02 15:04"),
 			),
 		},
