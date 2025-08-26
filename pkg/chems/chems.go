@@ -18,14 +18,6 @@ package chems
 	along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import (
-	"fmt"
-
-	"github.com/charmbracelet/lipgloss"
-	"github.com/charmbracelet/lipgloss/table"
-	"github.com/sethll/goCBC/pkg/progutils"
-)
-
 // HalfLifeStruct represents the half-life values for different substances in hours.
 type HalfLifeStruct struct {
 	Caffeine float64
@@ -45,48 +37,3 @@ var (
 	}
 	DefaultChem = "caffeine"
 )
-
-// ListAvailableChems prints a formatted list of all available substances and their half-lives.
-func ListAvailableChems() {
-	fmt.Println("Available chem options:")
-	fmt.Println(genChemOutputTable())
-}
-
-func genChemOutputTable() *table.Table {
-	header := []string{
-		"Chem", "Half-life",
-	}
-	var rows [][]string
-	for chemName, halfLife := range Available {
-		if chemName == DefaultChem {
-			chemName = fmt.Sprintf("%s (default)", chemName)
-		}
-		rows = append(rows, []string{chemName, fmt.Sprintf("%.2f hours", halfLife)})
-	}
-
-	//chemTable := table.New().Border(lipgloss.HiddenBorder()).BorderHeader(true).Rows(rows...).Headers(header...)
-	chemTable := table.New().
-		Headers(header...).Rows(rows...).
-		StyleFunc(func(row, col int) lipgloss.Style {
-			switch {
-			case row == table.HeaderRow:
-				return progutils.Styles.TableHeader
-			default:
-				return progutils.Styles.TableEvenRow
-				//saving these lines for when there are more chems
-				//case row%2 == 0:
-				//	return progutils.Styles.TableEvenRow
-				//default:
-				//	return progutils.Styles.TableOddRow
-			}
-		}).
-		BorderHeader(false).
-		BorderColumn(false).
-		BorderRow(false).
-		BorderLeft(false).
-		BorderRight(false).
-		BorderTop(false).
-		BorderBottom(false)
-
-	return chemTable
-}
