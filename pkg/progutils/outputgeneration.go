@@ -23,6 +23,7 @@ import (
 	"log/slog"
 	"math"
 
+	"github.com/charmbracelet/glamour"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/lipgloss/table"
 	"github.com/sethll/goCBC/pkg/chems"
@@ -116,11 +117,33 @@ func PrintProgHeader() {
 	)
 }
 
+func ShowCommon(chemPointer *chems.Chem) {
+	src := fmt.Sprintf(
+		"# Common sources and corresponding intake estimations for %s:\n%s",
+		(*chemPointer).Name,
+		(*chemPointer).CommonValues,
+	)
+	
+	renderer, err := glamour.NewTermRenderer(
+		glamour.WithAutoStyle(),
+	)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	out, err := renderer.Render(src)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	fmt.Print(out)
+}
+
 func genChemOutputTable() *table.Table {
 	header := []string{
 		"Chem", "Half-life",
 	}
-	
+
 	var rows [][]string
 	for _, chemName := range chems.ListAvailable() {
 		chemPointer, err := chems.GetChem(&chemName)

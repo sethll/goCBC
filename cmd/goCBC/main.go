@@ -39,6 +39,7 @@ var (
 	chem        string
 	chemPointer *chems.Chem
 	listChems   bool
+	showCommon  bool
 	showVersion bool
 	quiet       bool
 )
@@ -52,7 +53,7 @@ func main() {
 		Example: progmeta.UsageExample,
 		Args: func(cmd *cobra.Command, args []string) error {
 			// Skip argument validation if --list-chems or --version flag is used
-			if listChems || showVersion {
+			if listChems || showVersion || showCommon {
 				return nil
 			}
 			// Must have at least 2 arguments (1 required + at least 1 remaining)
@@ -81,6 +82,10 @@ func main() {
 				progutils.ListAvailableChems()
 				return
 			}
+			if showCommon {
+				progutils.ShowCommon(chemPointer)
+				return
+			}
 			runApp(args)
 		},
 	}
@@ -89,6 +94,7 @@ func main() {
 	rootCmd.Flags().StringVarP(&chem, "chem", "c", "caffeine", "choose chem")
 	rootCmd.Flags().BoolVar(&listChems, "list-chems", false, "list all available chem options")
 	rootCmd.Flags().BoolVarP(&quiet, "quiet", "q", false, "don't show program header")
+	rootCmd.Flags().BoolVar(&showCommon, "show-common", false, "show common sources and content for given chem")
 	//rootCmd.RegisterFlagCompletionFunc("chem", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 	//	return []string{"caffeine", "nicotine"}, cobra.ShellCompDirectiveDefault
 	//})
