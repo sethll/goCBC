@@ -22,7 +22,6 @@ import (
 	"fmt"
 	"log/slog"
 	"math"
-	"time"
 
 	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/lipgloss/table"
@@ -95,41 +94,6 @@ func GenerateOutputTableV1(r *Results, wearoffTarget *string, chem *string) *tab
 	return generatedTable
 }
 
-// GenerateOutputTablev0 creates a formatted table displaying current substance levels
-// and anticipated bedtime based on the target amount.
-func GenerateOutputTablev0(chemInBody *float64, bedTime *time.Time, sleepTarget *string, chem *string) *table.Table {
-	slog.Debug("Generating output table", "chemInBody", *chemInBody, "bedTime", (*bedTime).Format("2006-01-02 15:04"), "sleepTarget", *sleepTarget)
-	rows := [][]string{
-		{
-			fmt.Sprintf(
-				"%s remaining in system:",
-				Styles.Chem.Render(StringToTitleCase(*chem)),
-			),
-			Styles.Chem.Render(
-				fmt.Sprintf(
-					"~%.0fmg",
-					math.Round(*chemInBody),
-				),
-			),
-		},
-		{
-			fmt.Sprintf(
-				"Reach target (%s) for %s at:",
-				Styles.Chem.Render(
-					fmt.Sprintf("%smg", *sleepTarget),
-				),
-				Styles.Wearoff.Render("sleep"),
-			),
-			Styles.Wearoff.Render(
-				(*bedTime).Format("2006-01-02 15:04"),
-			),
-		},
-	}
-	generatedTable := table.New().Border(lipgloss.HiddenBorder()).Rows(rows...)
-	slog.Debug("Output table generated successfully", "rowCount", len(rows))
-	return generatedTable
-}
-
 // ListAvailableChems prints a formatted list of all available substances and their half-lives.
 func ListAvailableChems() {
 	fmt.Println("Available chem options:")
@@ -156,12 +120,19 @@ func genChemOutputTable() *table.Table {
 	header := []string{
 		"Chem", "Half-life",
 	}
+	
 	var rows [][]string
-	for chemName, halfLife := range chems.Available {
+	for _, chemName := range chems.ListAvailable() {
+		chemPointer, err := chems.GetChem(&chemName)
+		if err != nil {
+			slog.Error(err.Error())
+			panic("Something is very wrong, this should never throw an error")
+		}
+
 		if chemName == chems.DefaultChem {
 			chemName = fmt.Sprintf("%s (default)", chemName)
 		}
-		rows = append(rows, []string{chemName, fmt.Sprintf("%.2f hours", halfLife)})
+		rows = append(rows, []string{chemName, fmt.Sprintf("%.2f hours", (*chemPointer).Halflife)})
 	}
 
 	//chemTable := table.New().Border(lipgloss.HiddenBorder()).BorderHeader(true).Rows(rows...).Headers(header...)

@@ -37,7 +37,7 @@ import (
 var (
 	verbosity   int
 	chem        string
-	chemMHL     float64
+	chemPointer *chems.Chem
 	listChems   bool
 	showVersion bool
 	quiet       bool
@@ -68,10 +68,10 @@ func main() {
 				progutils.PrintProgHeader()
 			}
 
-			if halfLife, exists := chems.Available[chem]; exists {
-				chemMHL = halfLife
+			if pointer, err := chems.GetChem(&chem); err == nil {
+				chemPointer = pointer
 			} else {
-				return fmt.Errorf("invalid chem option '%s'", chem)
+				return err
 			}
 			verbosity = min(verbosity, 3)
 			return nil
@@ -107,12 +107,12 @@ func runApp(args []string) {
 
 	slog.Info("Finalized time/amount inputs", "targetAmount", targetAmount, "timesAndAmounts", timesAndAmounts)
 
-	hlcalc.RunHLCalculations(&results, &timesAndAmounts, &targetAmount, &chemMHL)
+	hlcalc.RunHLCalculations(&results, &timesAndAmounts, &targetAmount, &(*chemPointer).Halflife)
 
 	slog.Info("Finished RunHLCalculations", "results", (&results).String())
 
 	// Generate and print output
-	fmt.Println(progutils.GenerateOutputTableV1(&results, &wearoffTarget, &chem))
+	fmt.Println(progutils.GenerateOutputTableV1(&results, &wearoffTarget, &(*chemPointer).Name))
 }
 
 func initLogging() {

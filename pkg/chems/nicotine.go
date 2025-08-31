@@ -18,22 +18,10 @@ package chems
 	along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-// HalfLifeStruct represents the half-life values for different substances in hours.
-type HalfLifeStruct struct {
-	Caffeine float64
-	Nicotine float64
+var Nicotine = Chem{
+	Name:         "nicotine",
+	Halflife:     4.25,
+	Description:  "unused",
+	CommonValues: nicotineCommonValuesTable,
 }
-
-var (
-	// Available contains the mapping of substance names to their half-lives in hours.
-	Available = map[string]float64{
-		"caffeine": HalfLife.Caffeine,
-		"nicotine": HalfLife.Nicotine,
-	}
-	// HalfLife contains the half-life values for all supported substances.
-	HalfLife = HalfLifeStruct{
-		Caffeine: 5.00,
-		Nicotine: 4.25,
-	}
-	DefaultChem = "caffeine"
-)
+var nicotineCommonValuesTable = ""
