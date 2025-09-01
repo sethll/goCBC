@@ -36,7 +36,7 @@ jobs:
         make fmt
         if [ -n "$(git diff --name-only)" ]; then
           echo "Code is not formatted. Please run 'make fmt'"
-          git diff
+          git diff --name-only
           exit 1
         fi
     
