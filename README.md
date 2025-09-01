@@ -23,7 +23,7 @@ goCBC --list-chems
 
 ### From Source
 
-Requires Go 1.24.0 or later.
+Requires Go 1.25.0 or later.
 
 #### Easiest Method
 
