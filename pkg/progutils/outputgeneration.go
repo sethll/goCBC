@@ -32,18 +32,19 @@ import (
 
 // GenerateOutputTableV1 creates a formatted table displaying current substance levels
 // and anticipated wearoff time based on the target amount.
-func GenerateOutputTableV1(r *Results, wearoffTarget *string, chem *string) *table.Table {
-	slog.Debug("Generating output table", "wearoffTarget", *wearoffTarget, "chem", *chem, "results", (*r).String())
+func GenerateOutputTableV1(r *Results, wearoffTarget *string, chemPtr *chems.Chem) *table.Table {
+	slog.Debug("Generating output table", "wearoffTarget", *wearoffTarget, "chem", (*chemPtr).Name, "results", (*r).String())
 	rows := [][]string{
 		{
 			fmt.Sprintf(
 				"%s remaining in system:",
-				Styles.Chem.Render(StringToTitleCase(*chem)),
+				Styles.Chem.Render(StringToTitleCase((*chemPtr).Name)),
 			),
 			Styles.Chem.Render(
 				fmt.Sprintf(
-					"~%.0fmg",
+					"~%.0f%s",
 					math.Round((*r).BodyChemContent),
+					(*chemPtr).StandardUnit,
 				),
 			),
 		},
@@ -51,7 +52,7 @@ func GenerateOutputTableV1(r *Results, wearoffTarget *string, chem *string) *tab
 			fmt.Sprintf(
 				"Reach target (%s) for %s at:",
 				Styles.Chem.Render(
-					fmt.Sprintf("%smg", *wearoffTarget),
+					fmt.Sprintf("%s%s", *wearoffTarget, (*chemPtr).StandardUnit),
 				),
 				Styles.Wearoff.Render("wear-off"),
 			),
@@ -65,12 +66,13 @@ func GenerateOutputTableV1(r *Results, wearoffTarget *string, chem *string) *tab
 			[]string{
 				fmt.Sprintf(
 					"Future %s intake total:",
-					Styles.Chem.Render(*chem),
+					Styles.Chem.Render((*chemPtr).Name),
 				),
 				Styles.Chem.Render(
 					fmt.Sprintf(
-						"%.0fmg",
+						"%.0f%s",
 						math.Round((*r).TheoreticalChemIngestedTotal),
+						(*chemPtr).StandardUnit,
 					),
 				),
 			},
@@ -81,7 +83,7 @@ func GenerateOutputTableV1(r *Results, wearoffTarget *string, chem *string) *tab
 					"With future intake reach %s target (%s) at:",
 					Styles.Wearoff.Render("wear-off"),
 					Styles.Chem.Render(
-						fmt.Sprintf("%smg", *wearoffTarget),
+						fmt.Sprintf("%s%s", *wearoffTarget, (*chemPtr).StandardUnit),
 					),
 				),
 				Styles.Wearoff.Render(
@@ -123,7 +125,7 @@ func ShowCommon(chemPointer *chems.Chem) {
 		(*chemPointer).Name,
 		(*chemPointer).CommonValues,
 	)
-	
+
 	renderer, err := glamour.NewTermRenderer(
 		glamour.WithAutoStyle(),
 	)
@@ -158,7 +160,6 @@ func genChemOutputTable() *table.Table {
 		rows = append(rows, []string{chemName, fmt.Sprintf("%.2f hours", (*chemPointer).Halflife)})
 	}
 
-	//chemTable := table.New().Border(lipgloss.HiddenBorder()).BorderHeader(true).Rows(rows...).Headers(header...)
 	chemTable := table.New().
 		Headers(header...).Rows(rows...).
 		StyleFunc(func(row, col int) lipgloss.Style {
@@ -174,13 +175,7 @@ func genChemOutputTable() *table.Table {
 				//	return progutils.Styles.TableOddRow
 			}
 		}).
-		BorderHeader(false).
-		BorderColumn(false).
-		BorderRow(false).
-		BorderLeft(false).
-		BorderRight(false).
-		BorderTop(false).
-		BorderBottom(false)
+		Border(lipgloss.HiddenBorder())
 
 	return chemTable
 }

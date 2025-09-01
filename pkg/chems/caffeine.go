@@ -22,6 +22,7 @@ var Caffeine = Chem{
 	Name:         "caffeine",
 	Halflife:     5.00,
 	Description:  "unused",
+	StandardUnit: "mg",
 	CommonValues: caffeineCommonValuesTable,
 }
 var caffeineCommonValuesTable = `
