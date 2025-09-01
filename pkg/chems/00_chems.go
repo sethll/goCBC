@@ -25,6 +25,7 @@ type Chem struct {
 	Name         string
 	Halflife     float64
 	Description  string
+	StandardUnit string
 	CommonValues string
 }
 

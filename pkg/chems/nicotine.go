@@ -22,6 +22,7 @@ var Nicotine = Chem{
 	Name:         "nicotine",
 	Halflife:     4.25,
 	Description:  "unused",
+	StandardUnit: "mg",
 	CommonValues: nicotineCommonValuesTable,
 }
 var nicotineCommonValuesTable = `

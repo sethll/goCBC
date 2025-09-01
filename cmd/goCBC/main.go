@@ -118,7 +118,7 @@ func runApp(args []string) {
 	slog.Info("Finished RunHLCalculations", "results", (&results).String())
 
 	// Generate and print output
-	fmt.Println(progutils.GenerateOutputTableV1(&results, &wearoffTarget, &(*chemPointer).Name))
+	fmt.Println(progutils.GenerateOutputTableV1(&results, &wearoffTarget, chemPointer))
 }
 
 func initLogging() {
