@@ -36,7 +36,9 @@ jobs:
         make fmt
         if [ -n "$(git diff --name-only)" ]; then
           echo "Code is not formatted. Please run 'make fmt'"
-          git diff --name-only
+          for eachLine in $(git diff --name-only); do
+            echo "::error::Changed file: $eachLine"
+          done
           exit 1
         fi
     
