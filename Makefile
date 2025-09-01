@@ -99,6 +99,11 @@ tag:
 	git tag -a $(VERSION) -m "Release $(VERSION)"
 	@echo "Tag $(VERSION) created. Push with: git push origin $(VERSION)"
 
+.PHONY: update-deps
+update-deps:
+	@echo "Updating dependencies..."
+	go get -u ./...
+
 # Show help
 .PHONY: help
 help:
