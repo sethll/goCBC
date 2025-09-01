@@ -18,7 +18,9 @@ package progutils
 	along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import "github.com/charmbracelet/lipgloss"
+import (
+	"github.com/charmbracelet/lipgloss"
+)
 
 // StylesType defines the styling configuration for different UI elements.
 type StylesType struct {
@@ -34,9 +36,9 @@ var (
 	// Styles contains the styling configuration for different UI elements.
 	Styles = StylesType{
 		Wearoff: lipgloss.NewStyle().
-			Foreground(lipgloss.Color("31")), // "#87CEEB" "#005f87"
+			Foreground(lipgloss.AdaptiveColor{Light: "31", Dark: "#ff8700"}), // "#ff8700" "31" "#87CEEB" "#005f87"
 		Chem: lipgloss.NewStyle().
-			Foreground(lipgloss.Color("130")), // "#FFA500"
+			Foreground(lipgloss.AdaptiveColor{Light: "130", Dark: "#00d7ff"}), // "#00d7ff" "130" "#FFA500"
 		Header: lipgloss.NewStyle().
 			Bold(true).
 			Padding(1, 2).

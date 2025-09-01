@@ -9,10 +9,16 @@ Each document provides comprehensive literature reviews, meta-analyses, and clin
 ## Available Research Documents
 
 ### Caffeine
-- **[Caffeine Pharmacokinetic Analysis](./caffeine-pharmacokinetic-analysis.md)** - Comprehensive analysis of caffeine metabolism, half-life variability, and factors affecting clearance rates. Covers genetic polymorphisms, population differences, and clinical applications.
+- **[Caffeine Pharmacokinetic Analysis](caffeine/caffeine-pharmacokinetic-analysis.md)** - Comprehensive analysis of caffeine metabolism, half-life variability, and factors affecting clearance rates.
+- **[Caffeine Content Reference Table](caffeine/caffeine-content-reference-table.md)** - Detailed reference of caffeine content in various sources.
+- **[Caffeine Content Research](caffeine/caffeine-content-research.md)** - In-depth research on caffeine content and consumption patterns.
+- **[Caffeine Content Research References](caffeine/caffeine-content-research-references.md)** - Bibliographic references for caffeine research.
 
-### Nicotine  
-- **[Nicotine Pharmacokinetic Analysis](./nicotine-pharmacokinetic-analysis.md)** - Detailed examination of nicotine metabolism pathways, individual variability, and factors influencing elimination rates. Includes analysis of chronic smoking effects and population-specific differences.
+### Nicotine
+- **[Nicotine Pharmacokinetic Analysis](nicotine/nicotine-pharmacokinetic-analysis.md)** - Detailed examination of nicotine metabolism pathways, individual variability, and elimination rates.
+- **[Nicotine Content Table](nicotine/nicotine-content-table.md)** - Comprehensive table of nicotine content in various sources.
+- **[Nicotine Content Research](nicotine/nicotine-content-research.md)** - Research on nicotine content and consumption patterns.
+- **[Nicotine Content Research References](nicotine/nicotine-content-research-references.md)** - Bibliographic references for nicotine research.
 
 ## Research Methodology
 

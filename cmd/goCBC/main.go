@@ -37,8 +37,9 @@ import (
 var (
 	verbosity   int
 	chem        string
-	chemMHL     float64
+	chemPointer *chems.Chem
 	listChems   bool
+	showCommon  bool
 	showVersion bool
 	quiet       bool
 )
@@ -52,7 +53,7 @@ func main() {
 		Example: progmeta.UsageExample,
 		Args: func(cmd *cobra.Command, args []string) error {
 			// Skip argument validation if --list-chems or --version flag is used
-			if listChems || showVersion {
+			if listChems || showVersion || showCommon {
 				return nil
 			}
 			// Must have at least 2 arguments (1 required + at least 1 remaining)
@@ -68,10 +69,10 @@ func main() {
 				progutils.PrintProgHeader()
 			}
 
-			if halfLife, exists := chems.Available[chem]; exists {
-				chemMHL = halfLife
+			if pointer, err := chems.GetChem(&chem); err == nil {
+				chemPointer = pointer
 			} else {
-				return fmt.Errorf("invalid chem option '%s'", chem)
+				return err
 			}
 			verbosity = min(verbosity, 3)
 			return nil
@@ -79,6 +80,10 @@ func main() {
 		Run: func(cmd *cobra.Command, args []string) {
 			if listChems {
 				progutils.ListAvailableChems()
+				return
+			}
+			if showCommon {
+				progutils.ShowCommon(chemPointer)
 				return
 			}
 			runApp(args)
@@ -89,6 +94,7 @@ func main() {
 	rootCmd.Flags().StringVarP(&chem, "chem", "c", "caffeine", "choose chem")
 	rootCmd.Flags().BoolVar(&listChems, "list-chems", false, "list all available chem options")
 	rootCmd.Flags().BoolVarP(&quiet, "quiet", "q", false, "don't show program header")
+	rootCmd.Flags().BoolVar(&showCommon, "show-common", false, "show common sources and content for given chem")
 	//rootCmd.RegisterFlagCompletionFunc("chem", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 	//	return []string{"caffeine", "nicotine"}, cobra.ShellCompDirectiveDefault
 	//})
@@ -107,12 +113,12 @@ func runApp(args []string) {
 
 	slog.Info("Finalized time/amount inputs", "targetAmount", targetAmount, "timesAndAmounts", timesAndAmounts)
 
-	hlcalc.RunHLCalculations(&results, &timesAndAmounts, &targetAmount, &chemMHL)
+	hlcalc.RunHLCalculations(&results, &timesAndAmounts, &targetAmount, &(*chemPointer).Halflife)
 
 	slog.Info("Finished RunHLCalculations", "results", (&results).String())
 
 	// Generate and print output
-	fmt.Println(progutils.GenerateOutputTableV1(&results, &wearoffTarget, &chem))
+	fmt.Println(progutils.GenerateOutputTableV1(&results, &wearoffTarget, &(*chemPointer).Name))
 }
 
 func initLogging() {

@@ -26,3 +26,10 @@ go.work
 
 # crush
 .crush/
+
+# ignore demo for now
+demo/
+
+# OS
+.DS_Store
+.DS_Store?
