@@ -50,7 +50,7 @@ var (
 	ProgVersion = Version{
 		Major:    "0",
 		Minor:    "4",
-		Patch:    "2",
+		Patch:    "3",
 		Build:    build,
 		Runtime:  runtime.Version(),
 		Platform: getPlatform(),
