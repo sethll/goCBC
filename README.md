@@ -1,27 +1,29 @@
 # goCBC
 
-A Go implementation of the [caffeine-bedtime-calculator](https://github.com/sethll/caffeine-bedtime-calculator) that calculates when substance levels (such as caffeine) drop to target amounts for restful sleep using pharmacokinetic half-life modeling.
+A Go command-line utility that calculates when substance levels (such as caffeine) drop to target amounts for restful sleep using pharmacokinetic half-life modeling.
+
+![basic-usage-demo-gif](./demo/main.gif)
 
 ## Description
 
 goCBC helps you determine the optimal bedtime based on your substance intake throughout the day. By modeling the exponential decay of substances like caffeine using their known metabolic half-lives, the tool calculates when levels will drop to your desired target amount to improve sleep quality.
 
-Supported substances:
+Currently supported substances:
 
+- Caffeine
+- Nicotine
+
+```bash
+goCBC --list-chems
 ```
-# goCBC --list-chems
-...
-Available chem options:
-  Chem                  Half-life
-  caffeine (default)    5.00 hours
-  nicotine              4.25 hours
-```
+
+![list-chems-usage-demo-gif](./demo/list-chems.gif)
 
 ## Installation
 
 ### From Source
 
-Requires Go 1.23.0 or later.
+Requires Go 1.24.0 or later.
 
 #### Easiest Method
 
@@ -65,6 +67,8 @@ goCBC [flags] <target> '<time:amount>' ['<time:amount>' ...]
 - `-c, --chem <substance>`: Choose substance (default: "caffeine")
 - `-h, --help`: Show help information
 - `--list-chems`: List all available substances with their half-lives
+- `-q, --quiet`: Don't show program header
+- `--show-common`: Show common sources and content for given chem
 - `-v, --verbose`: Increase verbosity (use `-v`, `-vv`, `-vvv` for more detail)
 - `--version`: Show version information 
 
@@ -80,18 +84,6 @@ goCBC 50 '1100:300' '1500:150'
 Calculate with nicotine:
 ```bash
 goCBC --chem nicotine 0.2 '0900:2' '1300:4'
-```
-
-List available substances:
-```bash
-goCBC --list-chems
-```
-
-### Sample Output
-
-```
- Caffeine remaining in system:     ~86mg
- Reach target (50mg) for sleep at: 2025-08-23 03:30
 ```
 
 ## Development
