@@ -56,8 +56,8 @@ jobs:
       run: make exec-example
     
     - name: Upload build artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
-        name: goCBC-binary
+        name: goCBC
         path: build/goCBC
         retention-days: 30
