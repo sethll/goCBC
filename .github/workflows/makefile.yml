@@ -1,0 +1,63 @@
+name: Makefile CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Fetch full history for git commit hash
+    
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.24'
+    
+    - name: Cache Go modules
+      uses: actions/cache@v3
+      with:
+        path: ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+    
+    - name: Tidy dependencies
+      run: make tidy
+    
+    - name: Format check
+      run: |
+        make fmt
+        if [ -n "$(git diff --name-only)" ]; then
+          echo "Code is not formatted. Please run 'make fmt'"
+          git diff
+          exit 1
+        fi
+    
+    - name: Vet code
+      run: make vet
+    
+    - name: Test
+      run: make test
+    
+    - name: Build
+      run: make build
+    
+    - name: Test version
+      run: make test-version
+    
+    - name: Run example
+      run: make exec-example
+    
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: goCBC-binary
+        path: build/goCBC
+        retention-days: 30
